@@ -2,31 +2,20 @@
 <html lang="cs">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kino svět</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Kino Pyramida</title>
     <link rel="icon" type="image/x-icon" href="icons/pyramida.webp">
-    <!-- Bootstrap CSS -->
-    <link href="css/bootstrap.min.css" type="text/css" rel="stylesheet">
-    <link href="fonts/6.0/css/all.min.css" type="text/css" rel="stylesheet">
-    
-    <style>
-        body {
-            background-color: #121212;
-            color: #ffffff;
-        }
-        .navbar {
-            background-color: #1c1c1c;
-        }
-        .card {
-            background-color: #1e1e1e;
-            color: #ffffff;
-        }
-    </style>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet">
+
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark">
         <div class="container">
-            <a class="navbar-brand" href="#">Kino</a>
+            <a class="navbar-brand" href="#">Kino Pyramida</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -132,7 +121,6 @@
         <p>&copy; 2025 Kino. Všechna práva vyhrazena.</p>
     </footer>
 
-    <!-- Bootstrap JS -->
-    <script type="module" src="js/bootstrap.bundle.min.js"></script>
+    <script src="js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
