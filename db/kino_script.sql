@@ -79,6 +79,7 @@ CREATE TABLE IF NOT EXISTS `cinema`.`film` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(60) NOT NULL,
   `length` INT UNSIGNED NOT NULL,
+  `releaseDate` DATE NOT NULL,
   `FK_genre` INT UNSIGNED NOT NULL,
   PRIMARY KEY (`id`, `FK_genre`),
   INDEX `fk_film_genre_idx` (`FK_genre` ASC) VISIBLE)
