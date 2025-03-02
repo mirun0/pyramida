@@ -12,17 +12,17 @@
     <link href="https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet">
 </head>
 <body>
-<nav class="navbar navbar-expand-lg navbar-dark">
-    <div class="container">
-        <a class="navbar-brand" href="#">
-            <img src="icons/pyramida.png" alt="Pyramida" width="30" height="30" class="d-inline-block align-text-top">
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand d-flex align-items-center" href="#">
+            <img src="icons/pyramida.png" alt="Pyramida" width="30" height="30" class="me-2">
             Kino Pyramida
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
             <span class="navbar-toggler-icon"></span>
         </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ms-auto">
+        <div class="collapse navbar-collapse justify-content-lg-end text-center" id="navbarNav">
+            <ul class="navbar-nav">
                 <li class="nav-item"><a class="nav-link" href="#">Program</a></li>
                 <li class="nav-item"><a class="nav-link" href="#">Ceník</a></li>
                 <li class="nav-item"><a class="nav-link" href="#">Kontakt</a></li>
