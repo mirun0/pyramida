@@ -12,8 +12,20 @@ body {
 }
 .navbar {
     background-color: #1c1c1c;
-    max-height: 100px;
+    padding: 10px 20px;
 }
+.navbar-nav {
+    flex-direction: column;
+}
+@media (min-width: 992px) {
+    .navbar-nav {
+        flex-direction: row;
+    }
+}
+.navbar-toggler {
+    border: none;
+}
+
 .card {
     background-color: #1e1e1e;
     color: #ffffff;
