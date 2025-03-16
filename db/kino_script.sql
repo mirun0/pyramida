@@ -17,7 +17,8 @@ SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,N
 -- -----------------------------------------------------
 -- Schema cinema
 -- -----------------------------------------------------
--- DROP DATABASE `cinema`;
+-- 
+DROP DATABASE `cinema`;
 CREATE SCHEMA IF NOT EXISTS `cinema` DEFAULT CHARACTER SET utf16 COLLATE utf16_czech_ci ;
 USE `cinema` ;
 
@@ -558,6 +559,7 @@ VALUES
     (56, 10), (56, 11), (56, 12);
 
 -- Vložení recenzí od uživatelů na různé filmy
+SET FOREIGN_KEY_CHECKS = 0;
 INSERT INTO `cinema`.`review` (`text`, `stars`, `FK_user`, `FK_film`)
 VALUES
     -- Film 1
@@ -620,4 +622,201 @@ VALUES
     -- Film 20
     ('Dojemné a silné, určitě doporučuji.', 5, 11, 20),
     ('Hodně přehnané, ale dalo se na to dívat.', 3, 12, 20);
+SET FOREIGN_KEY_CHECKS = 1;
+
+-- Pohled 1 - filmy podle data vydani
+CREATE VIEW `latest_films` AS
+SELECT 
+    f.id AS film_id,
+    f.name AS film_name,
+    f.releaseDate,
+    f.description,
+    f.image,
+    g.name AS genre_name
+FROM 
+    `cinema`.`film` f
+JOIN 
+    `cinema`.`genre` g ON f.FK_genre = g.id
+ORDER BY 
+    f.releaseDate DESC;
+    
+-- select * from latest_films;
+
+-- Pohled 2 - nejlepe hodnocene filmy
+CREATE VIEW `top_rated_films` AS
+SELECT 
+    f.id AS film_id,
+    f.name AS film_name,
+    f.description,
+    f.image,
+    g.name AS genre_name,
+    AVG(r.stars) AS average_rating
+FROM 
+    `cinema`.`film` f
+JOIN 
+    `cinema`.`genre` g ON f.FK_genre = g.id
+LEFT JOIN 
+    `cinema`.`review` r ON f.id = r.FK_film
+GROUP BY 
+    f.id
+ORDER BY 
+    average_rating DESC;
+    
+-- select * from top_rated_films;
+   
+-- Pohled 3 - filmy podle zanru
+CREATE VIEW `films_by_genre` AS
+SELECT 
+    g.name AS genre_name,
+    f.id AS film_id,
+    f.name AS film_name,
+    f.description,
+    f.image,
+    f.releaseDate
+FROM 
+    `cinema`.`film` f
+JOIN 
+    `cinema`.`genre` g ON f.FK_genre = g.id
+ORDER BY 
+    g.name, f.releaseDate DESC;
+
+-- select * from films_by_genre;
+
+-- Pohled 4 - nejblizsi promitani
+CREATE VIEW `upcoming_screenings` AS
+SELECT 
+    fs.id AS screening_id,
+    fs.dateTime,
+    f.name AS film_name,
+    h.id AS hall_id,
+    l.language AS dubbing_language,
+    ls.language AS subtitles_language
+FROM 
+    `cinema`.`film_screening` fs
+JOIN 
+    `cinema`.`film` f ON fs.FK_film = f.id
+JOIN 
+    `cinema`.`hall` h ON fs.FK_hall = h.id
+LEFT JOIN 
+    `cinema`.`film_has_dubbing` fhd ON fs.FK_film_has_dubbing = fhd.id
+LEFT JOIN 
+    `cinema`.`language` l ON fhd.language_id = l.id
+LEFT JOIN 
+    `cinema`.`film_has_subtitles` fhs ON fs.FK_film_has_subtitles = fhs.id
+LEFT JOIN 
+    `cinema`.`language` ls ON fhs.FK_language = ls.id
+WHERE 
+    fs.dateTime > NOW()
+ORDER BY 
+    fs.dateTime ASC;    
+-- select * from upcoming_screenings;
+
+
+-- Procedura pro pridani noveho filmu
+DELIMITER //
+
+CREATE PROCEDURE AddNewFilm(
+    IN film_name VARCHAR(60),
+    IN film_length INT UNSIGNED,
+    IN release_date DATE,
+    IN description LONGTEXT,
+    IN image_url VARCHAR(255),
+    IN genre_id INT UNSIGNED
+)
+BEGIN
+    INSERT INTO `cinema`.`film` (`name`, `length`, `releaseDate`, `description`, `image`, `FK_genre`)
+    VALUES (film_name, film_length, release_date, description, image_url, genre_id);
+END //
+
+DELIMITER ;
+-- CALL AddNewFilm('Nový film', 120, '2025-12-01', 'Popis nového filmu.', 'obrazek.jpg', 1);
+-- select * from film;
+
+-- Procedura pro ziskani hodnoceni
+DELIMITER //
+
+CREATE PROCEDURE GetFilmReviews(IN film_id INT UNSIGNED)
+BEGIN
+    SELECT 
+        r.text AS review_text,
+        r.stars AS review_stars,
+        u.firstName AS user_first_name,
+        u.lastName AS user_last_name
+    FROM 
+        `cinema`.`review` r
+    JOIN 
+        `cinema`.`user` u ON r.FK_user = u.id
+    WHERE 
+        r.FK_film = film_id;
+END //
+
+DELIMITER ;
+-- CALL GetFilmReviews(1);  -- Získá recenze pro film s ID 1
+
+
+-- Procedura pro rezervaci sedadel na promitani
+DELIMITER //
+
+CREATE PROCEDURE `cinema`.`reserve_seats`(
+    IN user_id INT UNSIGNED, 
+    IN screening_id INT UNSIGNED, 
+    IN seats_to_reserve TEXT -- Textová hodnota s čísly sedadel oddělenými čárkami (např. '1,3,5')
+)
+BEGIN
+    DECLARE seat_id INT UNSIGNED;
+    DECLARE seat_number INT UNSIGNED;
+    DECLARE done INT DEFAULT 0;
+    DECLARE start_index INT DEFAULT 1;
+    DECLARE next_comma INT;
+    DECLARE seats_cursor CURSOR FOR 
+        SELECT `id` 
+        FROM `cinema`.`seat`
+        WHERE `seatNumber` = seat_number AND `FK_hall` = (SELECT `FK_hall` FROM `cinema`.`film_screening` WHERE `id` = screening_id LIMIT 1);
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = 1;
+
+    -- Vytvoření nové rezervace
+    INSERT INTO `cinema`.`booking`(`FK_user`, `FK_screening`) 
+    VALUES (user_id, screening_id);
+
+    -- Uchování ID rezervace
+    SET @booking_id = LAST_INSERT_ID();
+
+    -- Iterace přes všechny sedadla v seznamu
+    WHILE start_index > 0 DO
+        -- Najdi pozici příští čárky
+        SET next_comma = LOCATE(',', seats_to_reserve, start_index);
+        
+        -- Pokud není nalezena čárka, použij celé sedadlo až do konce řetězce
+        IF next_comma = 0 THEN
+            SET seat_number = CAST(SUBSTRING(seats_to_reserve, start_index) AS UNSIGNED);
+            SET start_index = 0; -- Ukončíme loop
+        ELSE
+            SET seat_number = CAST(SUBSTRING(seats_to_reserve, start_index, next_comma - start_index) AS UNSIGNED);
+            SET start_index = next_comma + 1;
+        END IF;
+
+        -- Otevření kurzoru pro dané sedadlo
+        OPEN seats_cursor;
+
+        -- Iterace přes nalezená sedadla
+        FETCH seats_cursor INTO seat_id;
+        INSERT INTO `cinema`.`booking_has_seat1`(`FK_booking`, `FK_seat`) 
+        VALUES (@booking_id, seat_id);
+        
+        -- Zavření kurzoru
+        CLOSE seats_cursor;
+    END WHILE;
+END//
+
+DELIMITER ;
+/*
+-- uzivatelk s id 1, na promitani 1 rezervuje tři sedadla (1,3,5)
+CALL `cinema`.`reserve_seats`(1, 1, '1,3,5');
+select * from booking where FK_user = 1;
+select * from booking_has_seat1 where FK_booking = 57;
+*/
+
+
+
+
 
