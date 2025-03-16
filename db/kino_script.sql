@@ -24,6 +24,7 @@ USE `cinema` ;
 -- -----------------------------------------------------
 -- Table `cinema`.`role`
 -- -----------------------------------------------------
+/*
 CREATE TABLE IF NOT EXISTS `cinema`.`role` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(30) NOT NULL,
@@ -31,6 +32,7 @@ CREATE TABLE IF NOT EXISTS `cinema`.`role` (
 ENGINE = MyISAM
 DEFAULT CHARACTER SET = utf16
 COLLATE = utf16_czech_ci;
+*/
 
 
 -- -----------------------------------------------------
@@ -42,9 +44,10 @@ CREATE TABLE IF NOT EXISTS `cinema`.`user` (
   `lastName` VARCHAR(50) NOT NULL,
   `email` VARCHAR(320) NOT NULL,
   `password` VARCHAR(64) NOT NULL,
-  `FK_role` INT UNSIGNED NOT NULL,
-  PRIMARY KEY (`id`),
-  INDEX `fk_user_role1_idx` (`FK_role` ASC) VISIBLE)
+  -- `FK_role` INT UNSIGNED,
+  PRIMARY KEY (`id`)
+  -- INDEX `fk_user_role1_idx` (`FK_role` ASC)
+  )
 ENGINE = MyISAM
 DEFAULT CHARACTER SET = utf16
 COLLATE = utf16_czech_ci;
@@ -85,7 +88,7 @@ CREATE TABLE IF NOT EXISTS `cinema`.`film` (
   `image` VARCHAR(255) NOT NULL,
   `FK_genre` INT UNSIGNED NOT NULL,
   PRIMARY KEY (`id`),
-  INDEX `fk_film_genre_idx` (`FK_genre` ASC) VISIBLE)
+  INDEX `fk_film_genre_idx` (`FK_genre` ASC))
 ENGINE = MyISAM
 DEFAULT CHARACTER SET = utf16
 COLLATE = utf16_czech_ci;
@@ -111,8 +114,8 @@ CREATE TABLE IF NOT EXISTS `cinema`.`film_has_dubbing` (
   `FK_film` INT UNSIGNED NOT NULL,
   `language_id` INT UNSIGNED NOT NULL,
   PRIMARY KEY (`id`),
-  INDEX `fk_film_has_language_film1_idx` (`FK_film` ASC) VISIBLE,
-  INDEX `fk_film_has_dubbing_language1_idx` (`language_id` ASC) VISIBLE)
+  INDEX `fk_film_has_language_film1_idx` (`FK_film` ASC),
+  INDEX `fk_film_has_dubbing_language1_idx` (`language_id` ASC))
 ENGINE = MyISAM
 DEFAULT CHARACTER SET = utf16
 COLLATE = utf16_czech_ci;
@@ -126,8 +129,8 @@ CREATE TABLE IF NOT EXISTS `cinema`.`film_has_subtitles` (
   `FK_film` INT UNSIGNED NOT NULL,
   `FK_language` INT UNSIGNED NOT NULL,
   PRIMARY KEY (`id`),
-  INDEX `fk_film_has_language_language1_idx` (`FK_language` ASC) VISIBLE,
-  INDEX `fk_film_has_language_film2_idx` (`FK_film` ASC) VISIBLE)
+  INDEX `fk_film_has_language_language1_idx` (`FK_language` ASC),
+  INDEX `fk_film_has_language_film2_idx` (`FK_film` ASC))
 ENGINE = MyISAM
 DEFAULT CHARACTER SET = utf16
 COLLATE = utf16_czech_ci;
@@ -142,13 +145,13 @@ CREATE TABLE IF NOT EXISTS `cinema`.`film_screening` (
   `FK_hall` INT UNSIGNED NOT NULL,
   `FK_film` INT UNSIGNED NOT NULL,
   `FK_film_has_dubbing` INT UNSIGNED NOT NULL,
-  `FK_film_has_subtitles` INT UNSIGNED NOT NULL,
+  `FK_film_has_subtitles` INT UNSIGNED,
   PRIMARY KEY (`id`),
-  UNIQUE INDEX `FK_hall` (`dateTime` ASC) VISIBLE,
-  INDEX `fk_film_screening_hall1_idx` (`FK_hall` ASC) VISIBLE,
-  INDEX `fk_film_screening_film1_idx` (`FK_film` ASC) VISIBLE,
-  INDEX `fk_film_screening_film_has_dubbing1_idx` (`FK_film_has_dubbing` ASC) VISIBLE,
-  INDEX `fk_film_screening_film_has_subtitles1_idx` (`FK_film_has_subtitles` ASC) VISIBLE)
+  UNIQUE INDEX `FK_hall` (`dateTime` ASC),
+  INDEX `fk_film_screening_hall1_idx` (`FK_hall` ASC),
+  INDEX `fk_film_screening_film1_idx` (`FK_film` ASC),
+  INDEX `fk_film_screening_film_has_dubbing1_idx` (`FK_film_has_dubbing` ASC),
+  INDEX `fk_film_screening_film_has_subtitles1_idx` (`FK_film_has_subtitles` ASC))
 ENGINE = MyISAM
 DEFAULT CHARACTER SET = utf16
 COLLATE = utf16_czech_ci;
@@ -162,8 +165,8 @@ CREATE TABLE IF NOT EXISTS `cinema`.`booking` (
   `FK_user` INT UNSIGNED NOT NULL,
   `FK_screening` INT UNSIGNED NOT NULL,
   PRIMARY KEY (`id`),
-  INDEX `fk_booking_user1_idx` (`FK_user` ASC) VISIBLE,
-  INDEX `fk_booking_film_screening1_idx` (`FK_screening` ASC) VISIBLE)
+  INDEX `fk_booking_user1_idx` (`FK_user` ASC),
+  INDEX `fk_booking_film_screening1_idx` (`FK_screening` ASC))
 ENGINE = MyISAM
 DEFAULT CHARACTER SET = utf16
 COLLATE = utf16_czech_ci;
@@ -178,8 +181,8 @@ CREATE TABLE IF NOT EXISTS `cinema`.`seat` (
   `rowNumber` INT UNSIGNED NOT NULL,
   `FK_hall` INT UNSIGNED NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE INDEX `seatNumber` (`seatNumber` ASC, `rowNumber` ASC) VISIBLE,
-  INDEX `fk_seat_hall1_idx` (`FK_hall` ASC) VISIBLE)
+  UNIQUE INDEX `seatNumber` (`seatNumber` ASC, `rowNumber` ASC, `FK_hall` ASC),
+  INDEX `fk_seat_hall1_idx` (`FK_hall` ASC))
 ENGINE = MyISAM
 DEFAULT CHARACTER SET = utf16
 COLLATE = utf16_czech_ci;
@@ -192,8 +195,8 @@ CREATE TABLE IF NOT EXISTS `cinema`.`booking_has_seat1` (
   `FK_booking` INT UNSIGNED NOT NULL,
   `FK_seat` INT UNSIGNED NOT NULL,
   PRIMARY KEY (`FK_booking`, `FK_seat`),
-  INDEX `fk_booking_has_seat1_seat1_idx` (`FK_seat` ASC) VISIBLE,
-  INDEX `fk_booking_has_seat1_booking1_idx` (`FK_booking` ASC) VISIBLE)
+  INDEX `fk_booking_has_seat1_seat1_idx` (`FK_seat` ASC),
+  INDEX `fk_booking_has_seat1_booking1_idx` (`FK_booking` ASC))
 ENGINE = MyISAM
 DEFAULT CHARACTER SET = utf16
 COLLATE = utf16_czech_ci;
@@ -209,8 +212,8 @@ CREATE TABLE IF NOT EXISTS `cinema`.`review` (
   `FK_user` INT UNSIGNED NOT NULL,
   `FK_film` INT UNSIGNED NOT NULL,
   PRIMARY KEY (`id`),
-  INDEX `fk_review_user1_idx` (`FK_user` ASC) VISIBLE,
-  INDEX `fk_review_film1_idx` (`FK_film` ASC) VISIBLE,
+  INDEX `fk_review_user1_idx` (`FK_user` ASC),
+  INDEX `fk_review_film1_idx` (`FK_film` ASC),
   CONSTRAINT `fk_review_user1`
     FOREIGN KEY (`FK_user`)
     REFERENCES `cinema`.`user` (`id`)
@@ -227,3 +230,394 @@ ENGINE = InnoDB;
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
+
+/*
+-- Vložení dat do tabulky `role`
+INSERT INTO `cinema`.`role` (`name`) 
+VALUES 
+    ('Bronze'),
+    ('Silver'),
+    ('Gold');
+*/
+
+-- Vložení dat do tabulky `user`
+INSERT INTO `cinema`.`user` (`firstName`, `lastName`, `email`, `password`) 
+VALUES 
+    ('Jan', 'Novák', 'jan.novak@example.com', SHA2('xHeslo123', 256)),
+    ('Petr', 'Svoboda', 'petr.svoboda@example.com', SHA2('xHeslo123', 256)),
+    ('Eva', 'Dvořáková', 'eva.dvorakova@example.com', SHA2('xHeslo123', 256)),
+    ('Lucie', 'Černá', 'lucie.cerna@example.com', SHA2('xHeslo123', 256)),
+    ('Karel', 'Procházka', 'karel.prochazka@example.com', SHA2('xHeslo123', 256)),
+    ('Marie', 'Veselá', 'marie.vesela@example.com', SHA2('xHeslo123', 256)),
+    ('Adam', 'Král', 'adam.kral@example.com', SHA2('xHeslo123', 256)),
+    ('Tereza', 'Benešová', 'tereza.benesova@example.com', SHA2('xHeslo123', 256)),
+    ('Jakub', 'Fiala', 'jakub.fiala@example.com', SHA2('xHeslo123', 256)),
+    ('Michaela', 'Sedláčková', 'michaela.sedlackova@example.com', SHA2('xHeslo123', 256)),
+    ('Ondřej', 'Malý', 'ondrej.maly@example.com', SHA2('xHeslo123', 256)),
+    ('Barbora', 'Kučerová', 'barbora.kucerova@example.com', SHA2('xHeslo123', 256)),
+    ('Filip', 'Horák', 'filip.horak@example.com', SHA2('xHeslo123', 256)),
+    ('Veronika', 'Marešová', 'veronika.maresova@example.com', SHA2('xHeslo123', 256)),
+    ('David', 'Pokorný', 'david.pokorny@example.com', SHA2('xHeslo123', 256)),
+    ('Anna', 'Kratochvílová', 'anna.kratochvilova@example.com', SHA2('xHeslo123', 256)),
+    ('Tomáš', 'Němec', 'tomas.nemec@example.com', SHA2('xHeslo123', 256)),
+    ('Simona', 'Pavlíčková', 'simona.pavlickova@example.com', SHA2('xHeslo123', 256)),
+    ('Radek', 'Urban', 'radek.urban@example.com', SHA2('xHeslo123', 256)),
+    ('Kateřina', 'Dostálová', 'katerina.dostalova@example.com', SHA2('xHeslo123', 256)),
+    ('Lukáš', 'Polák', 'lukas.polak@example.com', SHA2('xHeslo123', 256)),
+    ('Nikola', 'Soukupová', 'nikola.soukupova@example.com', SHA2('xHeslo123', 256)),
+    ('Dominik', 'Šimek', 'dominik.simek@example.com', SHA2('xHeslo123', 256)),
+    ('Hana', 'Zemanová', 'hana.zemanova@example.com', SHA2('xHeslo123', 256)),
+    ('Martin', 'Vávra', 'martin.vavra@example.com', SHA2('xHeslo123', 256)),
+    ('Patrik', 'Mach', 'patrik.mach@example.com', SHA2('xHeslo123', 256)),
+    ('Alena', 'Šťastná', 'alena.stastna@example.com', SHA2('xHeslo123', 256)),
+    ('Jiří', 'Kopecký', 'jiri.kopecky@example.com', SHA2('xHeslo123', 256)),
+    ('Ivana', 'Vlčková', 'ivana.vlckova@example.com', SHA2('xHeslo123', 256)),
+    ('Roman', 'Holý', 'roman.holy@example.com', SHA2('xHeslo123', 256)),
+    ('Gabriela', 'Matoušková', 'gabriela.matouskova@example.com', SHA2('xHeslo123', 256)),
+    ('Viktor', 'Tůma', 'viktor.tuma@example.com', SHA2('xHeslo123', 256)),
+    ('Eliška', 'Kočová', 'eliska.kocova@example.com', SHA2('xHeslo123', 256)),
+    ('Pavel', 'Bartoš', 'pavel.bartos@example.com', SHA2('xHeslo123', 256)),
+    ('Jana', 'Havelková', 'jana.havelkova@example.com', SHA2('xHeslo123', 256)),
+    ('Štěpán', 'Klimeš', 'stepan.klimes@example.com', SHA2('xHeslo123', 256)),
+    ('Monika', 'Vítková', 'monika.vitkova@example.com', SHA2('xHeslo123', 256)),
+    ('Vojtěch', 'Hruška', 'vojtech.hruska@example.com', SHA2('xHeslo123', 256)),
+    ('Kristýna', 'Bláhová', 'kristyna.blahova@example.com', SHA2('xHeslo123', 256)),
+    ('Robert', 'Kříž', 'robert.kriz@example.com', SHA2('xHeslo123', 256)),
+    ('Adéla', 'Krejčová', 'adela.krejcova@example.com', SHA2('xHeslo123', 256)),
+    ('Marek', 'Štěpánek', 'marek.stepanek@example.com', SHA2('xHeslo123', 256)),
+    ('Denisa', 'Kvasničková', 'denisa.kvasnickova@example.com', SHA2('xHeslo123', 256)),
+    ('Jaroslav', 'Růžička', 'jaroslav.ruzicka@example.com', SHA2('xHeslo123', 256)),
+    ('Veronika', 'Beránková', 'veronika.berankova@example.com', SHA2('xHeslo123', 256)),
+    ('Daniel', 'Vašíček', 'daniel.vasicek@example.com', SHA2('xHeslo123', 256)),
+    ('Tereza', 'Horká', 'tereza.horka@example.com', SHA2('xHeslo123', 256)),
+    ('Kamil', 'Svatoš', 'kamil.svatos@example.com', SHA2('xHeslo123', 256)),
+    ('Andrea', 'Pospíšilová', 'andrea.pospisilova@example.com', SHA2('xHeslo123', 256)),
+    ('Miloslav', 'Hájek', 'miloslav.hajek@example.com', SHA2('xHeslo123', 256));
+    
+-- Vložení dat do tabulky `hall`
+INSERT INTO `cinema`.`hall` () VALUES (), (), (), ();
+
+-- Vložení sedadel do každého sálu (30 sedadel na sál - 5*6)
+INSERT INTO `cinema`.`seat` (`seatNumber`, `rowNumber`, `FK_hall`)
+VALUES 
+    -- Sál 1
+    (1, 1, 1), (2, 1, 1), (3, 1, 1), (4, 1, 1), (5, 1, 1), (6, 1, 1),
+    (1, 2, 1), (2, 2, 1), (3, 2, 1), (4, 2, 1), (5, 2, 1), (6, 2, 1),
+    (1, 3, 1), (2, 3, 1), (3, 3, 1), (4, 3, 1), (5, 3, 1), (6, 3, 1),
+    (1, 4, 1), (2, 4, 1), (3, 4, 1), (4, 4, 1), (5, 4, 1), (6, 4, 1),
+    (1, 5, 1), (2, 5, 1), (3, 5, 1), (4, 5, 1), (5, 5, 1), (6, 5, 1),
+    -- Sál 2
+    (1, 1, 2), (2, 1, 2), (3, 1, 2), (4, 1, 2), (5, 1, 2), (6, 1, 2),
+    (1, 2, 2), (2, 2, 2), (3, 2, 2), (4, 2, 2), (5, 2, 2), (6, 2, 2),
+    (1, 3, 2), (2, 3, 2), (3, 3, 2), (4, 3, 2), (5, 3, 2), (6, 3, 2),
+    (1, 4, 2), (2, 4, 2), (3, 4, 2), (4, 4, 2), (5, 4, 2), (6, 4, 2),
+    (1, 5, 2), (2, 5, 2), (3, 5, 2), (4, 5, 2), (5, 5, 2), (6, 5, 2),
+    -- Sál 3
+    (1, 1, 3), (2, 1, 3), (3, 1, 3), (4, 1, 3), (5, 1, 3), (6, 1, 3),
+    (1, 2, 3), (2, 2, 3), (3, 2, 3), (4, 2, 3), (5, 2, 3), (6, 2, 3),
+    (1, 3, 3), (2, 3, 3), (3, 3, 3), (4, 3, 3), (5, 3, 3), (6, 3, 3),
+    (1, 4, 3), (2, 4, 3), (3, 4, 3), (4, 4, 3), (5, 4, 3), (6, 4, 3),
+    (1, 5, 3), (2, 5, 3), (3, 5, 3), (4, 5, 3), (5, 5, 3), (6, 5, 3),
+    -- Sál 4
+    (1, 1, 4), (2, 1, 4), (3, 1, 4), (4, 1, 4), (5, 1, 4), (6, 1, 4),
+    (1, 2, 4), (2, 2, 4), (3, 2, 4), (4, 2, 4), (5, 2, 4), (6, 2, 4),
+    (1, 3, 4), (2, 3, 4), (3, 3, 4), (4, 3, 4), (5, 3, 4), (6, 3, 4),
+    (1, 4, 4), (2, 4, 4), (3, 4, 4), (4, 4, 4), (5, 4, 4), (6, 4, 4),
+    (1, 5, 4), (2, 5, 4), (3, 5, 4), (4, 5, 4), (5, 5, 4), (6, 5, 4);
+
+
+-- Vložení dat do tabulky `genre`
+INSERT INTO `cinema`.`genre` (`name`) 
+VALUES 
+    ('Akční'),
+    ('Dobrodružný'),
+    ('Sci-Fi'),
+    ('Horor'),
+    ('Fantasy'),
+    ('Drama'),
+    ('Komedie'),
+    ('Romantický'),
+    ('Animovaný'),
+    ('Dokumentární');
+
+-- Vložení dat do tabulky `film`
+INSERT INTO `cinema`.`film` (`name`, `length`, `releaseDate`, `description`, `image`, `FK_genre`) 
+VALUES 
+    ('Avengers: Endgame', 181, '2019-04-26', 'Epické zakončení série Avengers.', 'avengers.jpg', 1),
+    ('Interstellar', 169, '2014-11-07', 'Vesmírná cesta napříč černými děrami.', 'interstellar.jpg', 3),
+    ('Paranormal Activity', 86, '2007-09-14', 'Horor o nadpřirozených událostech.', 'paranormal.jpg', 4),
+    ('Pán prstenů: Návrat krále', 201, '2003-12-17', 'Velkolepé zakončení fantasy trilogie.', 'lotr.jpg', 5),
+    ('Titanic', 195, '1997-12-19', 'Nezapomenutelný příběh lásky na potápějící se lodi.', 'titanic.jpg', 8),
+    ('Shrek', 90, '2001-05-18', 'Animovaná pohádka o zlobrovi a jeho přátelích.', 'shrek.jpg', 9),
+    ('Joker', 122, '2019-10-04', 'Příběh proměny Arthura Flecka v Jokera.', 'joker.jpg', 6),
+    ('Forrest Gump', 142, '1994-07-06', 'Osudy jednoduchého muže s obrovským srdcem.', 'forrest.jpg', 6),
+    ('Gladiátor', 155, '2000-05-05', 'Římský generál se stane gladiátorem.', 'gladiator.jpg', 1),
+    ('Mad Max: Fury Road', 120, '2015-05-15', 'Postapokalyptická honička na plný plyn.', 'madmax.jpg', 1),
+    ('Indiana Jones a Poslední křížová výprava', 127, '1989-05-24', 'Dobrodružství slavného archeologa.', 'indiana.jpg', 2),
+    ('To', 135, '2017-09-08', 'Adaptace hororového bestselleru Stephena Kinga.', 'it.jpg', 4),
+    ('Strážci galaxie', 121, '2014-08-01', 'Vesmírní hrdinové zachraňují galaxii.', 'guardians.jpg', 3),
+    ('Nedotknutelní', 112, '2011-11-02', 'Francouzské drama o přátelství bohatého muže a pečovatele.', 'intouchables.jpg', 6),
+    ('Mamma Mia!', 108, '2008-07-03', 'Hudební film s hity od ABBY.', 'mammamia.jpg', 8),
+    ('Toy Story 4', 100, '2019-06-21', 'Pokračování dobrodružství oblíbených hraček.', 'toystory.jpg', 9),
+    ('Bohemian Rhapsody', 134, '2018-10-24', 'Životní příběh Freddieho Mercuryho.', 'bohemian.jpg', 10),
+    ('Planeta opic', 112, '1968-04-03', 'Sci-fi klasika o planetě ovládané opicemi.', 'planetaopic.jpg', 3),
+    ('Schindlerův seznam', 195, '1993-11-30', 'Silný příběh o Oskaru Schindlerovi.', 'schindler.jpg', 6),
+    ('Deadpool', 108, '2016-02-12', 'Drsná komiksová komedie s antihrdinou.', 'deadpool.jpg', 7);
+    
+-- Vložení jazyků (pokud už nejsou vložené)
+INSERT INTO `cinema`.`language` (`language`) 
+VALUES 
+    ('Čeština'),
+    ('Angličtina'),
+    ('Němčina'),
+    ('Francouzština'),
+    ('Španělština');
+
+-- Vložení dabingů (některé filmy mají víc jazyků)
+INSERT INTO `cinema`.`film_has_dubbing` (`FK_film`, `language_id`) 
+VALUES 
+    (1, 2),  -- Avengers: Endgame (Anglicky)
+    (1, 1),  -- Avengers: Endgame (Česky)
+    (2, 2),  -- Interstellar (Anglicky)
+    (3, 1),  -- Paranormal Activity (Česky)
+    (4, 2),  -- Pán prstenů: Návrat krále (Anglicky)
+    (4, 1),  -- Pán prstenů: Návrat krále (Česky)
+    (5, 2),  -- Titanic (Anglicky)
+    (6, 1),  -- Shrek (Česky)
+    (6, 2),  -- Shrek (Anglicky)
+    (7, 2),  -- Joker (Anglicky)
+    (8, 2),  -- Forrest Gump (Anglicky)
+    (8, 1),  -- Forrest Gump (Česky)
+    (9, 2),  -- Gladiátor (Anglicky)
+    (10, 2), -- Mad Max: Fury Road (Anglicky)
+    (10, 1), -- Mad Max: Fury Road (Česky)
+    (11, 2), -- Indiana Jones (Anglicky)
+    (12, 1), -- To (Česky)
+    (12, 2), -- To (Anglicky)
+    (13, 2), -- Strážci galaxie (Anglicky)
+    (14, 3), -- Nedotknutelní (Francouzsky)
+    (14, 1), -- Nedotknutelní (Česky)
+    (15, 2), -- Mamma Mia! (Anglicky)
+    (15, 1), -- Mamma Mia! (Česky)
+    (16, 1), -- Toy Story 4 (Česky)
+    (17, 2), -- Bohemian Rhapsody (Anglicky)
+    (18, 2), -- Planeta opic (Anglicky)
+    (19, 2), -- Schindlerův seznam (Anglicky)
+    (20, 2); -- Deadpool (Anglicky)
+
+-- Vložení titulků (některé filmy mají více verzí)
+INSERT INTO `cinema`.`film_has_subtitles` (`FK_film`, `FK_language`) 
+VALUES 
+    (1, 1),  -- Avengers: Endgame (Titulky v češtině)
+    (1, 2),  -- Avengers: Endgame (Titulky v angličtině)
+    (2, 1),  -- Interstellar (Titulky v češtině)
+    (4, 1),  -- Pán prstenů: Návrat krále (Titulky v češtině)
+    (4, 2),  -- Pán prstenů: Návrat krále (Titulky v angličtině)
+    (5, 1),  -- Titanic (Titulky v češtině)
+    (5, 2),  -- Titanic (Titulky v angličtině)
+    (7, 1),  -- Joker (Titulky v češtině)
+    (7, 2),  -- Joker (Titulky v angličtině)
+    (9, 1),  -- Gladiátor (Titulky v češtině)
+    (9, 2),  -- Gladiátor (Titulky v angličtině)
+    (11, 1), -- Indiana Jones (Titulky v češtině)
+    (13, 1), -- Strážci galaxie (Titulky v češtině)
+    (14, 1), -- Nedotknutelní (Titulky v češtině)
+    (14, 2), -- Nedotknutelní (Titulky v angličtině)
+    (17, 1), -- Bohemian Rhapsody (Titulky v češtině)
+    (18, 1), -- Planeta opic (Titulky v češtině)
+    (18, 2), -- Planeta opic (Titulky v angličtině)
+    (19, 1), -- Schindlerův seznam (Titulky v češtině)
+    (19, 2); -- Schindlerův seznam (Titulky v angličtině)
+    
+-- Více promítání filmů (každý film se hraje víckrát, různé sály, různé časy)
+INSERT INTO `cinema`.`film_screening` (`dateTime`, `FK_hall`, `FK_film`, `FK_film_has_dubbing`, `FK_film_has_subtitles`) 
+VALUES 
+    -- Avengers Endgame (sál 1)
+    ('2025-03-16 14:00:00', 1, 1, 1, 1),
+    ('2025-03-17 18:00:00', 1, 1, 2, NULL),
+    ('2025-03-18 20:00:00', 2, 1, 1, 2),
+    -- Interstellar (sál 2)
+    ('2025-03-16 17:00:00', 2, 2, 2, 1),
+    ('2025-03-18 21:00:00', 3, 2, 2, NULL),
+    ('2025-03-19 15:00:00', 1, 2, 1, 2),
+    -- Paranormal Activity (sál 3)
+    ('2025-03-16 20:00:00', 3, 3, 3, NULL),
+    ('2025-03-17 22:00:00', 1, 3, 3, 1),
+    -- Pán prstenů (sál 4)
+    ('2025-03-16 15:30:00', 4, 4, 4, 2),
+    ('2025-03-18 19:00:00', 2, 4, 4, NULL),
+    ('2025-03-19 17:30:00', 3, 4, 5, 1),
+    -- Titanic (sál 2)
+    ('2025-03-16 19:00:00', 2, 5, 5, 1),
+    ('2025-03-17 21:30:00', 3, 5, 6, NULL),
+    ('2025-03-19 14:00:00', 1, 5, 5, 2),
+    -- Shrek (sál 1)
+    ('2025-03-16 21:30:00', 1, 6, 6, NULL),
+    ('2025-03-18 16:00:00', 2, 6, 6, 1),
+    -- Joker (sál 3)
+    ('2025-03-16 16:00:00', 3, 7, 7, 1),
+    ('2025-03-18 22:00:00', 4, 7, 7, NULL),
+    -- Forrest Gump (sál 4)
+    ('2025-03-16 19:30:00', 4, 8, 8, NULL),
+    ('2025-03-17 15:30:00', 3, 8, 8, 1),
+    -- Gladiátor (sál 2)
+    ('2025-03-16 22:00:00', 2, 9, 9, 2),
+    ('2025-03-18 18:30:00', 1, 9, 9, NULL),
+    -- Mad Max (sál 4)
+    ('2025-03-17 17:30:00', 4, 10, 10, 1),
+    ('2025-03-19 20:30:00', 2, 10, 10, 2),
+    -- Indiana Jones (sál 3)
+    ('2025-03-17 21:00:00', 3, 11, 11, NULL),
+    ('2025-03-18 17:00:00', 4, 11, 11, 1);
+
+-- Opravené rezervace na promítání (náhodné rozložení uživatelů)
+INSERT INTO `cinema`.`booking` (`FK_user`, `FK_screening`)
+VALUES 
+    -- Avengers Endgame
+    (5, 1), (12, 1), (33, 1), (21, 1), (45, 2), (9, 2), (27, 2), (11, 3), (39, 3), 
+    -- Interstellar
+    (14, 4), (8, 4), (3, 4), (50, 5), (19, 5), (31, 6), (6, 6), 
+    -- Paranormal Activity
+    (1, 7), (42, 7), (37, 7), (29, 8), (40, 8), (17, 8),
+    -- Pán prstenů
+    (22, 9), (30, 9), (44, 9), (2, 10), (41, 10), (16, 11),
+    -- Titanic
+    (13, 12), (32, 12), (23, 12), (7, 13), (28, 13), (35, 14),
+    -- Shrek
+    (26, 15), (18, 15), (46, 15), (10, 16), (38, 16),
+    -- Joker
+    (47, 17), (4, 17), (15, 18),
+    -- Forrest Gump
+    (24, 19), (48, 19), (25, 19), (20, 20), (36, 20),
+    -- Gladiátor
+    (50, 21), (34, 21), (5, 22),
+    -- Mad Max
+    (49, 23), (9, 23), (43, 24),
+    -- Indiana Jones
+    (11, 25), (33, 25), (31, 26);
+
+-- Přiřazení sedadel ke všem 56 rezervacím
+INSERT INTO `cinema`.`booking_has_seat1` (`FK_booking`, `FK_seat`)
+VALUES 
+    -- Každá rezervace dostane 1–4 sedadla
+    (1, 1), (1, 2), (1, 3),
+    (2, 5),
+    (3, 10), (3, 11), (3, 12),
+    (4, 15), (4, 16),
+    (5, 20), (5, 21), (5, 22), (5, 23),
+    (6, 6),
+    (7, 25), (7, 26),
+    (8, 30),
+    (9, 3), (9, 4), (9, 5),
+    (10, 8), (10, 9),
+    (11, 13), (11, 14),
+    (12, 18),
+    (13, 24), (13, 27), (13, 28),
+    (14, 29),
+    (15, 17), (15, 19),
+    (16, 1), (16, 2), (16, 3), (16, 4),
+    (17, 5), (17, 6),
+    (18, 7), (18, 8), (18, 9),
+    (19, 10),
+    (20, 11), (20, 12), (20, 13),
+    (21, 14), (21, 15),
+    (22, 16),
+    (23, 17), (23, 18), (23, 19),
+    (24, 20), (24, 21), (24, 22),
+    (25, 23),
+    (26, 24), (26, 25), (26, 26),
+    (27, 27), (27, 28),
+    (28, 29), (28, 30),
+    (29, 1), (29, 2), (29, 3),
+    (30, 4), (30, 5),
+    (31, 6), (31, 7), (31, 8),
+    (32, 9), (32, 10),
+    (33, 11), (33, 12), (33, 13),
+    (34, 14), (34, 15),
+    (35, 16), (35, 17),
+    (36, 18), (36, 19),
+    (37, 20), (37, 21),
+    (38, 22), (38, 23),
+    (39, 24), (39, 25),
+    (40, 26), (40, 27),
+    (41, 28), (41, 29),
+    (42, 30),
+    (43, 1), (43, 2), (43, 3),
+    (44, 4), (44, 5), (44, 6),
+    (45, 7), (45, 8), (45, 9),
+    (46, 10), (46, 11), (46, 12),
+    (47, 13), (47, 14), (47, 15),
+    (48, 16), (48, 17), (48, 18),
+    (49, 19), (49, 20), (49, 21),
+    (50, 22), (50, 23), (50, 24),
+    (51, 25), (51, 26), (51, 27),
+    (52, 28), (52, 29), (52, 30),
+    (53, 1), (53, 2), (53, 3),
+    (54, 4), (54, 5), (54, 6),
+    (55, 7), (55, 8), (55, 9),
+    (56, 10), (56, 11), (56, 12);
+
+-- Vložení recenzí od uživatelů na různé filmy
+INSERT INTO `cinema`.`review` (`text`, `stars`, `FK_user`, `FK_film`)
+VALUES
+    -- Film 1
+    ('Skvělý film! Výborné herecké výkony a napínavý děj.', 5, 3, 1),
+    ('Dobrý film, ale konec mohl být lepší.', 4, 7, 1),
+    -- Film 2
+    ('Perfektní atmosféra, napětí až do konce!', 5, 8, 2),
+    ('Trochu pomalejší rozjezd, ale celkově super.', 4, 15, 2),
+    -- Film 3
+    ('Děj byl trochu předvídatelný, ale jinak fajn.', 3, 6, 3),
+    ('Výborné efekty a zajímavá zápletka!', 5, 19, 3),
+    -- Film 4
+    ('Trochu nuda, ale herci to zachránili.', 2, 11, 4),
+    ('Líbilo se mi to, určitě doporučuji.', 4, 22, 4),
+    -- Film 5
+    ('Mistrné zpracování a emoce na maximum!', 5, 1, 5),
+    ('Film měl své slabé chvilky, ale celkově dobré.', 4, 10, 5),
+    -- Film 6
+    ('Skvělý soundtrack a vizuální efekty.', 5, 5, 6),
+    ('Příběh mě moc neoslovil, ale bylo to dobře natočené.', 3, 14, 6),
+    -- Film 7
+    ('Nejlepší film roku, nemám co dodat!', 5, 9, 7),
+    ('Čekal jsem víc originality.', 3, 17, 7),
+    -- Film 8
+    ('Temná atmosféra, která mě úplně pohltila.', 5, 2, 8),
+    ('Zbytečně dlouhé, ale jinak dobré.', 3, 13, 8),
+    -- Film 9
+    ('Tenhle film mě bavil od začátku do konce.', 5, 4, 9),
+    ('Slabší scénář, ale výborná kamera.', 3, 20, 9),
+    -- Film 10
+    ('Geniální film! Už dlouho jsem neviděl něco tak dobrého.', 5, 16, 10),
+    ('Docela dobré, ale chyběla mi tam akce.', 4, 18, 10),
+    -- Film 11
+    ('Originální příběh a skvělá atmosféra.', 5, 12, 11),
+    ('Hodně zajímavý film, ale mohl být kratší.', 4, 21, 11),
+    -- Film 12
+    ('Tento film mě úplně dostal, úžasné zpracování!', 5, 7, 12),
+    ('Moc pomalé tempo, ale jinak fajn.', 3, 15, 12),
+    -- Film 13
+    ('Děsivé a napínavé, rozhodně doporučuji!', 5, 6, 13),
+    ('Nebylo to špatné, ale viděl jsem lepší.', 3, 19, 13),
+    -- Film 14
+    ('Emotivní a nádherně natočené.', 5, 10, 14),
+    ('Zajímavý koncept, ale realizace pokulhávala.', 3, 2, 14),
+    -- Film 15
+    ('Jednoznačně nejlepší sci-fi poslední doby.', 5, 1, 15),
+    ('Dobrý film, ale očekával jsem něco jiného.', 4, 22, 15),
+    -- Film 16
+    ('Akce od začátku do konce, paráda!', 5, 5, 16),
+    ('Nuda, ale asi jsem neměl správnou náladu.', 2, 17, 16),
+    -- Film 17
+    ('Vynikající herecké výkony a zajímavý děj.', 5, 8, 17),
+    ('Trochu moc dlouhé, ale jinak fajn.', 4, 14, 17),
+    -- Film 18
+    ('Romantika v tom nejlepším podání.', 5, 9, 18),
+    ('Předvídatelné, ale příjemné na koukání.', 3, 18, 18),
+    -- Film 19
+    ('Naprosto šílené, ale skvělé!', 5, 3, 19),
+    ('Zajímavý vizuální styl, ale slabší scénář.', 4, 20, 19),
+    -- Film 20
+    ('Dojemné a silné, určitě doporučuji.', 5, 11, 20),
+    ('Hodně přehnané, ale dalo se na to dívat.', 3, 12, 20);
+
