@@ -7,7 +7,7 @@ html {
 }
 body {
     background-color: #121212;
-    color: #ffffff;
+    color: #f3f3f3;
     font-family: "Figtree", sans-serif;
 }
 .navbar {
@@ -16,7 +16,14 @@ body {
 }
 .navbar-nav {
     flex-direction: column;
+    gap: 10px;
 }
+.nav-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 @media (min-width: 992px) {
     .navbar-nav {
         flex-direction: row;
@@ -40,4 +47,12 @@ body {
 }
 .carousel-control-next {
     right: -60px;
+}
+@media screen and (max-width: 1000px) {
+    .carousel-control-prev {
+        left: 0px;
+    }
+    .carousel-control-next {
+        right: 0px;
+    }
 }
