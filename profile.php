@@ -1,51 +1,67 @@
 <!DOCTYPE html>
-<html lang="cs" data-bs-theme="light">
+<html lang="cs" data-bs-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="keywords" content="atletika Slatiňany, Spartak Slatiňany">
-    <meta name="description" content="Web atletického klubu Spartak Slatiňany">
-    <meta name="author" content="Vojtěch Jirásek">
-    <link rel="icon" href="icons/logo_kun3.png">
+    <meta name="keywords" content="kino, pyramida">
+    <meta name="description" content="Web kina Pyramida">
+    <meta name="author" content="Pyramida">
+    <link rel="icon" type="image/x-icon" href="icons/pyramida.webp">
     <title>Profil uživatele</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
     <style>
         body {
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            background-color: #f8f9fa;
-            overflow: hidden;
+            background-color: #121212;
+            color: #f3f3f3;
             flex-direction: column;
         }
         .profile-container {
             max-width: 400px;
             width: 100%;
             padding: 20px;
-            background: white;
+            background: #1e1e1e;
             border-radius: 10px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-            max-height: 90vh;
-            overflow-y: auto;
-            transition: max-height 0.3s ease-in-out;
+            box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.1);
         }
         .alert {
             text-align: center;
         }
-    </style>
-
-    <script>
-        function toggleForm(formId) {
-            var form = document.getElementById(formId);
-            form.style.display = (form.style.display === 'none' || form.style.display === '') ? 'block' : 'none';
-
-            document.querySelector('.profile-container').scrollTo({ top: 0, behavior: 'smooth' });
+        .form-control, .input-group-text {
+            background-color: #333;
+            color: #f3f3f3;
+            border: 1px solid #555;
         }
-    </script>
-
+        .btn-primary {
+            background-color: #6200ea;
+            border: none;
+        }
+        .btn-outline-secondary {
+            color: #f3f3f3;
+            border-color: #f3f3f3;
+        }
+    </style>
 </head>
+<body>
+<?php
+include 'db/db_connect.php';
+session_start();
+if (!isset($_SESSION['loggedAccount'])) {
+    header("Location: login.php");
+    exit;
+}
+
+$userId = $_SESSION['accountId'];
+$sql = "SELECT * FROM user WHERE id = ?";
+$stmt = $conn->prepare($sql);
+$stmt->execute([$userId]);
+$user = $stmt->fetch();
+?>
+
 <?php if (isset($_GET['success']) && $_GET['success'] === 'updated'): ?>
     <div class="alert alert-success">Změny byly úspěšně uloženy.</div>
 <?php endif; ?>
@@ -57,32 +73,22 @@
 <?php elseif (isset($_GET['error']) && $_GET['error'] === 'wrongPassword'): ?>
     <div class="alert alert-danger">Akce se nezdařila.<br>Bylo zadáno špatné heslo!</div>
 <?php endif; ?>
-<body>
-<?php
-include 'db.php';
-session_start();
-if (!isset($_SESSION['loggedAccount'])) {
-    header("Location: login.php");
-    exit;
-}
-
-$userId = $_SESSION['accountId'];
-$sql = "SELECT * FROM accounts WHERE id = ?";
-$stmt = $conn->prepare($sql);
-$stmt->execute([$userId]);
-$user = $stmt->fetch();
-?>
 
 <div class="profile-container">
     <h3 class="text-center">Profil</h3>
-    <p><strong>Jméno:</strong> <?php echo htmlspecialchars($user['name']); ?></p>
+    <p><strong>Jméno:</strong> <?php echo htmlspecialchars($user['firstName']); ?></p>
+    <p><strong>Příjmení:</strong> <?php echo htmlspecialchars($user['lastName']); ?></p>
     <p><strong>Email:</strong> <?php echo htmlspecialchars($user['email']); ?></p>
 
     <button class="btn btn-primary w-100" onclick="toggleForm('edit_form')">Upravit údaje</button>
     <form id="edit_form" method="post" action="update_profile.php" style="display:none;">
         <div class="mt-3">
-            <label for="edit_name" class="form-label">Nové jméno</label>
-            <input type="text" class="form-control" id="edit_name" name="name" value="<?php echo $user['name'] ?>" required>
+            <label for="edit_firstName" class="form-label">Nové jméno</label>
+            <input type="text" class="form-control" id="edit_firstName" name="firstName" value="<?php echo $user['firstName'] ?>" required>
+        </div>
+        <div class="mt-3">
+            <label for="edit_lastName" class="form-label">Nové příjmení</label>
+            <input type="text" class="form-control" id="edit_lastName" name="lastName" value="<?php echo $user['lastName'] ?>" required>
         </div>
         <div class="mt-3">
             <label for="edit_email" class="form-label">Nový email</label>
@@ -109,7 +115,7 @@ $user = $stmt->fetch();
     </form>
 
     <div class="text-center mt-3">
-        <a href="http://localhost/TNPW2/" class="btn btn-outline-secondary w-100">Zpět na hlavní stránku</a>
+        <a href="index.php" class="btn btn-outline-secondary w-100">Zpět na hlavní stránku</a>
     </div>
 
     <form method="post" action="logout.php" class="mt-3">
@@ -128,5 +134,7 @@ $user = $stmt->fetch();
         form.style.display = (form.style.display === 'none' || form.style.display === '') ? 'block' : 'none';
     }
 </script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
 </body>
 </html>
+

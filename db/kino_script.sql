@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS user (
 	PRIMARY KEY (id)
 ) ENGINE = MyISAM;
 
-CREATE INDEX idx_user_email ON user(email);
+CREATE INDEX idx_user_email ON user(email(191));
 
 CREATE TABLE IF NOT EXISTS hall (
 	id INT UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -112,57 +112,57 @@ INSERT INTO role(name) VALUES
 	('admin'), ('film_manager'), ('user');
 
 INSERT INTO user(firstName, lastName, email, password, FK_role) VALUES 
-	('Jan', 'Novák', 'admin', SHA2('xHeslo123', 256), 0),
-    ('Petr', 'Svoboda', 'film_manager', SHA2('xHeslo123', 256), 1),
-    ('Eva', 'Dvořáková', 'eva.dvorakova@example.com', SHA2('xHeslo123', 256), 2),
-    ('Lucie', 'Černá', 'lucie.cerna@example.com', SHA2('xHeslo123', 256), 2),
-    ('Karel', 'Procházka', 'karel.prochazka@example.com', SHA2('xHeslo123', 256), 2),
-    ('Marie', 'Veselá', 'marie.vesela@example.com', SHA2('xHeslo123', 256), 2),
-    ('Adam', 'Král', 'adam.kral@example.com', SHA2('xHeslo123', 256), 2),
-    ('Tereza', 'Benešová', 'tereza.benesova@example.com', SHA2('xHeslo123', 256), 2),
-    ('Jakub', 'Fiala', 'jakub.fiala@example.com', SHA2('xHeslo123', 256), 2),
-    ('Michaela', 'Sedláčková', 'michaela.sedlackova@example.com', SHA2('xHeslo123', 256), 2),
-    ('Ondřej', 'Malý', 'ondrej.maly@example.com', SHA2('xHeslo123', 256), 2),
-    ('Barbora', 'Kučerová', 'barbora.kucerova@example.com', SHA2('xHeslo123', 256), 2),
-    ('Filip', 'Horák', 'filip.horak@example.com', SHA2('xHeslo123', 256), 2),
-    ('Veronika', 'Marešová', 'veronika.maresova@example.com', SHA2('xHeslo123', 256), 2),
-    ('David', 'Pokorný', 'david.pokorny@example.com', SHA2('xHeslo123', 256), 2),
-    ('Anna', 'Kratochvílová', 'anna.kratochvilova@example.com', SHA2('xHeslo123', 256), 2),
-    ('Tomáš', 'Němec', 'tomas.nemec@example.com', SHA2('xHeslo123', 256), 2),
-    ('Simona', 'Pavlíčková', 'simona.pavlickova@example.com', SHA2('xHeslo123', 256), 2),
-    ('Radek', 'Urban', 'radek.urban@example.com', SHA2('xHeslo123', 256), 2),
-    ('Kateřina', 'Dostálová', 'katerina.dostalova@example.com', SHA2('xHeslo123', 256), 2),
-    ('Lukáš', 'Polák', 'lukas.polak@example.com', SHA2('xHeslo123', 256), 2),
-    ('Nikola', 'Soukupová', 'nikola.soukupova@example.com', SHA2('xHeslo123', 256), 2),
-    ('Dominik', 'Šimek', 'dominik.simek@example.com', SHA2('xHeslo123', 256), 2),
-    ('Hana', 'Zemanová', 'hana.zemanova@example.com', SHA2('xHeslo123', 256), 2),
-    ('Martin', 'Vávra', 'martin.vavra@example.com', SHA2('xHeslo123', 256), 2),
-    ('Patrik', 'Mach', 'patrik.mach@example.com', SHA2('xHeslo123', 256), 2),
-    ('Alena', 'Šťastná', 'alena.stastna@example.com', SHA2('xHeslo123', 256), 2),
-    ('Jiří', 'Kopecký', 'jiri.kopecky@example.com', SHA2('xHeslo123', 256), 2),
-    ('Ivana', 'Vlčková', 'ivana.vlckova@example.com', SHA2('xHeslo123', 256), 2),
-    ('Roman', 'Holý', 'roman.holy@example.com', SHA2('xHeslo123', 256), 2),
-    ('Gabriela', 'Matoušková', 'gabriela.matouskova@example.com', SHA2('xHeslo123', 256), 2),
-    ('Viktor', 'Tůma', 'viktor.tuma@example.com', SHA2('xHeslo123', 256), 2),
-    ('Eliška', 'Kočová', 'eliska.kocova@example.com', SHA2('xHeslo123', 256), 2),
-    ('Pavel', 'Bartoš', 'pavel.bartos@example.com', SHA2('xHeslo123', 256), 2),
-    ('Jana', 'Havelková', 'jana.havelkova@example.com', SHA2('xHeslo123', 256), 2),
-    ('Štěpán', 'Klimeš', 'stepan.klimes@example.com', SHA2('xHeslo123', 256), 2),
-    ('Monika', 'Vítková', 'monika.vitkova@example.com', SHA2('xHeslo123', 256), 2),
-    ('Vojtěch', 'Hruška', 'vojtech.hruska@example.com', SHA2('xHeslo123', 256), 2),
-    ('Kristýna', 'Bláhová', 'kristyna.blahova@example.com', SHA2('xHeslo123', 256), 2),
-    ('Robert', 'Kříž', 'robert.kriz@example.com', SHA2('xHeslo123', 256), 2),
-    ('Adéla', 'Krejčová', 'adela.krejcova@example.com', SHA2('xHeslo123', 256), 2),
-    ('Marek', 'Štěpánek', 'marek.stepanek@example.com', SHA2('xHeslo123', 256), 2),
-    ('Denisa', 'Kvasničková', 'denisa.kvasnickova@example.com', SHA2('xHeslo123', 256), 2),
-    ('Jaroslav', 'Růžička', 'jaroslav.ruzicka@example.com', SHA2('xHeslo123', 256), 2),
-    ('Veronika', 'Beránková', 'veronika.berankova@example.com', SHA2('xHeslo123', 256), 2),
-    ('Daniel', 'Vašíček', 'daniel.vasicek@example.com', SHA2('xHeslo123', 256), 2),
-    ('Tereza', 'Horká', 'tereza.horka@example.com', SHA2('xHeslo123', 256), 2),
-    ('Kamil', 'Svatoš', 'kamil.svatos@example.com', SHA2('xHeslo123', 256), 2),
-    ('Andrea', 'Pospíšilová', 'andrea.pospisilova@example.com', SHA2('xHeslo123', 256), 2),
-    ('Miloslav', 'Hájek', 'miloslav.hajek@example.com', SHA2('xHeslo123', 256), 2);
-    
+	('Jan', 'Novák', 'admin', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 0),
+    ('Petr', 'Svoboda', 'film_manager', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 1),
+    ('Eva', 'Dvořáková', 'eva.dvorakova@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 2),
+    ('Lucie', 'Černá', 'lucie.cerna@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 2),
+    ('Karel', 'Procházka', 'karel.prochazka@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 2),
+    ('Marie', 'Veselá', 'marie.vesela@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 2),
+    ('Adam', 'Král', 'adam.kral@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 2),
+    ('Tereza', 'Benešová', 'tereza.benesova@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 2),
+    ('Jakub', 'Fiala', 'jakub.fiala@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 2),
+    ('Michaela', 'Sedláčková', 'michaela.sedlackova@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 2),
+    ('Ondřej', 'Malý', 'ondrej.maly@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 2),
+    ('Barbora', 'Kučerová', 'barbora.kucerova@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 2),
+    ('Filip', 'Horák', 'filip.horak@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 2),
+    ('Veronika', 'Marešová', 'veronika.maresova@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 2),
+    ('David', 'Pokorný', 'david.pokorny@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 2),
+    ('Anna', 'Kratochvílová', 'anna.kratochvilova@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 2),
+    ('Tomáš', 'Němec', 'tomas.nemec@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 2),
+    ('Simona', 'Pavlíčková', 'simona.pavlickova@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 2),
+    ('Radek', 'Urban', 'radek.urban@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 2),
+    ('Kateřina', 'Dostálová', 'katerina.dostalova@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 2),
+    ('Lukáš', 'Polák', 'lukas.polak@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 2),
+    ('Nikola', 'Soukupová', 'nikola.soukupova@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 2),
+    ('Dominik', 'Šimek', 'dominik.simek@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 2),
+    ('Hana', 'Zemanová', 'hana.zemanova@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 2),
+    ('Martin', 'Vávra', 'martin.vavra@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 2),
+    ('Patrik', 'Mach', 'patrik.mach@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 2),
+    ('Alena', 'Šťastná', 'alena.stastna@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 2),
+    ('Jiří', 'Kopecký', 'jiri.kopecky@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 2),
+    ('Ivana', 'Vlčková', 'ivana.vlckova@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 2),
+    ('Roman', 'Holý', 'roman.holy@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 2),
+    ('Gabriela', 'Matoušková', 'gabriela.matouskova@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 2),
+    ('Viktor', 'Tůma', 'viktor.tuma@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 2),
+    ('Eliška', 'Kočová', 'eliska.kocova@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 2),
+    ('Pavel', 'Bartoš', 'pavel.bartos@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 2),
+    ('Jana', 'Havelková', 'jana.havelkova@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 2),
+    ('Štěpán', 'Klimeš', 'stepan.klimes@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 2),
+    ('Monika', 'Vítková', 'monika.vitkova@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 2),
+    ('Vojtěch', 'Hruška', 'vojtech.hruska@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 2),
+    ('Kristýna', 'Bláhová', 'kristyna.blahova@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 2),
+    ('Robert', 'Kříž', 'robert.kriz@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 2),
+    ('Adéla', 'Krejčová', 'adela.krejcova@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 2),
+    ('Marek', 'Štěpánek', 'marek.stepanek@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 2),
+    ('Denisa', 'Kvasničková', 'denisa.kvasnickova@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 2),
+    ('Jaroslav', 'Růžička', 'jaroslav.ruzicka@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 2),
+    ('Veronika', 'Beránková', 'veronika.berankova@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 2),
+    ('Daniel', 'Vašíček', 'daniel.vasicek@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 2),
+    ('Tereza', 'Horká', 'tereza.horka@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 2),
+    ('Kamil', 'Svatoš', 'kamil.svatos@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 2),
+    ('Andrea', 'Pospíšilová', 'andrea.pospisilova@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 2),
+    ('Miloslav', 'Hájek', 'miloslav.hajek@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 2);
+        
 INSERT INTO hall() VALUES 
 	(), (), (), ();
 
@@ -648,6 +648,7 @@ DELIMITER //
 
 CREATE FUNCTION get_film_reviews(film_id INT UNSIGNED)
 RETURNS TEXT
+reads sql data
 BEGIN
     DECLARE result TEXT;
     SELECT 
@@ -673,6 +674,7 @@ DELIMITER //
 
 CREATE FUNCTION get_user_full_name(user_id INT UNSIGNED)
 RETURNS VARCHAR(120)
+reads sql data
 BEGIN
     DECLARE full_name VARCHAR(101);
     
@@ -695,6 +697,7 @@ CREATE FUNCTION change_user_password(
     new_password VARCHAR(256)
 )
 RETURNS BOOLEAN
+reads sql data
 BEGIN
     DECLARE rowsUpdated INT;
 
