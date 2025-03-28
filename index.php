@@ -1,3 +1,13 @@
+<?php
+include 'db/db_connect.php';
+
+$sql = "SELECT * FROM latest_films limit 6";
+$stmt = $conn->prepare($sql);
+$stmt->execute();
+$newestFilms = $stmt->fetchAll();
+
+?>
+
 <!DOCTYPE html>
 <html lang="cs">
 <head>
@@ -21,76 +31,27 @@
 </header>
 
 <div class="container">
+    <h2>Nejnovějsí filmy</h2><br>
     <div id="filmCarousel" class="carousel slide" data-bs-ride="carousel">
         <div class="carousel-inner">
-            <div class="carousel-item active">
-                <div class="row">
-                    <div class="col-md-4">
-                        <div class="card mb-4">
-                            <img src="img/dan.jpg" class="card-img-top" alt="Film 1">
-                            <div class="card-body">
-                                <h5 class="card-title">Film 1</h5>
-                                <p class="card-text">Krátký popis filmu.</p>
-                                <a href="#" class="btn btn-primary">Více informací</a>
+            <?php foreach (array_chunk($newestFilms, 3) as $index => $filmGroup): ?>
+                <div class="carousel-item <?= $index === 0 ? 'active' : '' ?>">
+                    <div class="row">
+                        <?php foreach ($filmGroup as $film): ?>
+                            <div class="col-md-4">
+                                <div class="card mb-4">
+                                    <img src="img/<?= htmlspecialchars($film['image']) ?>" class="card-img-top" alt="<?= htmlspecialchars($film['film_name']) ?>">
+                                    <div class="card-body">
+                                        <h5 class="card-title"><?= htmlspecialchars($film['film_name']) ?></h5>
+                                        <p class="card-text"><?= htmlspecialchars($film['description']) ?></p>
+                                        <a href="#" class="btn btn-primary">Více informací</a>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="card mb-4">
-                            <img src="img/dan.jpg" class="card-img-top" alt="Film 2">
-                            <div class="card-body">
-                                <h5 class="card-title">Film 2</h5>
-                                <p class="card-text">Krátký popis filmu.</p>
-                                <a href="#" class="btn btn-primary">Více informací</a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="card mb-4">
-                            <img src="img/dan.jpg" class="card-img-top" alt="Film 3">
-                            <div class="card-body">
-                                <h5 class="card-title">Film 3</h5>
-                                <p class="card-text">Krátký popis filmu.</p>
-                                <a href="#" class="btn btn-primary">Více informací</a>
-                            </div>
-                        </div>
+                        <?php endforeach; ?>
                     </div>
                 </div>
-            </div>
-            <div class="carousel-item">
-                <div class="row">
-                    <div class="col-md-4">
-                        <div class="card mb-4">
-                            <img src="img/dan.jpg" class="card-img-top" alt="Film 4">
-                            <div class="card-body">
-                                <h5 class="card-title">Film 4</h5>
-                                <p class="card-text">Krátký popis filmu.</p>
-                                <a href="#" class="btn btn-primary">Více informací</a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="card mb-4">
-                            <img src="img/dan.jpg" class="card-img-top" alt="Film 5">
-                            <div class="card-body">
-                                <h5 class="card-title">Film 5</h5>
-                                <p class="card-text">Krátký popis filmu.</p>
-                                <a href="#" class="btn btn-primary">Více informací</a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="card mb-4">
-                            <img src="img/dan.jpg" class="card-img-top" alt="Film 6">
-                            <div class="card-body">
-                                <h5 class="card-title">Film 6</h5>
-                                <p class="card-text">Krátký popis filmu.</p>
-                                <a href="#" class="btn btn-primary">Více informací</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <?php endforeach; ?>
         </div>
         <button class="carousel-control-prev" type="button" data-bs-target="#filmCarousel" data-bs-slide="prev">
             <span class="carousel-control-prev-icon" aria-hidden="true"></span>
