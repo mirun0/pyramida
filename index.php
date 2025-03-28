@@ -21,6 +21,8 @@ $newestFilms = $stmt->fetchAll();
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@splidejs/splide/dist/css/splide.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@splidejs/splide/dist/js/splide.min.js"></script>
 </head>
 <body>
 <?php include "layout/nav.php" ?>
@@ -31,41 +33,51 @@ $newestFilms = $stmt->fetchAll();
 </header>
 
 <div class="container">
-    <h2>Nejnovějsí filmy</h2><br>
-    <div id="filmCarousel" class="carousel slide" data-bs-ride="carousel">
-        <div class="carousel-inner">
-            <?php foreach (array_chunk($newestFilms, 3) as $index => $filmGroup): ?>
-                <div class="carousel-item <?= $index === 0 ? 'active' : '' ?>">
-                    <div class="row">
-                        <?php foreach ($filmGroup as $film): ?>
-                            <div class="col-md-4">
-                                <div class="card mb-4">
-                                    <img src="img/<?= htmlspecialchars($film['image']) ?>" class="card-img-top" alt="<?= htmlspecialchars($film['film_name']) ?>">
-                                    <div class="card-body">
-                                        <h5 class="card-title"><?= htmlspecialchars($film['film_name']) ?></h5>
-                                        <p class="card-text"><?= htmlspecialchars($film['description']) ?></p>
-                                        <a href="#" class="btn btn-primary">Více informací</a>
-                                    </div>
-                                </div>
-                            </div>
-                        <?php endforeach; ?>
-                    </div>
-                </div>
-            <?php endforeach; ?>
+    <h2>Nejnovější filmy</h2><br>
+    <div class="splide" id="filmSlider">
+        <div class="splide__track">
+            <ul class="splide__list">
+                <!-- Dynamicky generované snímky -->
+                <?php foreach ($newestFilms as $film): ?>
+                    <li class="splide__slide">
+                        <div class="film-card">
+                            <img src="img/<?= htmlspecialchars($film['image']) ?>" alt="<?= htmlspecialchars($film['film_name']) ?>">
+                            <h5><?= htmlspecialchars($film['film_name']) ?></h5>
+                            <p><?= htmlspecialchars($film['description']) ?></p>
+                            <a href="#" class="btn btn-primary">Více informací</a>
+                        </div>
+                    </li>
+                <?php endforeach; ?>
+            </ul>
         </div>
-        <button class="carousel-control-prev" type="button" data-bs-target="#filmCarousel" data-bs-slide="prev">
-            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-            <span class="visually-hidden">Previous</span>
-        </button>
-        <button class="carousel-control-next" type="button" data-bs-target="#filmCarousel" data-bs-slide="next">
-            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-            <span class="visually-hidden">Next</span>
-        </button>
+        <!-- Navigační tlačítka -->
+        <div class="splide__arrows">
+            <button class="splide__arrow splide__arrow--prev">‹</button>
+            <button class="splide__arrow splide__arrow--next">›</button>
+        </div>
     </div>
 </div>
 
 <?php include "layout/footer.php" ?>
 
 <script src="js/bootstrap.bundle.min.js"></script>
+<script>
+    new Splide('#filmSlider', {
+        type       : 'loop',
+        perPage    : 3,
+        gap        : '1rem',
+        pagination: false,
+        arrows     : true,
+        breakpoints: {
+            768: {
+                perPage: 1,
+            },
+            1024: {
+                perPage: 2,
+            },
+        },
+    }).mount();
+</script>
+
 </body>
 </html>

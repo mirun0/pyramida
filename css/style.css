@@ -56,3 +56,13 @@ body {
         right: 0px;
     }
 }
+.film-card {
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+}
+.film-card img {
+    width: auto;
+    border-radius: 8px;
+    margin-bottom: 5px;
+}
