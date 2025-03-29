@@ -6,6 +6,11 @@ $stmt = $conn->prepare($sql);
 $stmt->execute();
 $newestFilms = $stmt->fetchAll();
 
+$sql = "SELECT * FROM top_rated_films limit 6";
+$stmt = $conn->prepare($sql);
+$stmt->execute();
+$topRatedFilms = $stmt->fetchAll();
+
 ?>
 
 <!DOCTYPE html>
@@ -33,8 +38,8 @@ $newestFilms = $stmt->fetchAll();
 </header>
 
 <div class="container">
-    <h2>Nejnovější filmy</h2><br>
-    <div class="splide" id="filmSlider">
+    <div class="splide" id="newestFilmSlider">
+        <h2>Nejnovější filmy</h2>
         <div class="splide__track">
             <ul class="splide__list">
                 <!-- Dynamicky generované snímky -->
@@ -56,26 +61,99 @@ $newestFilms = $stmt->fetchAll();
             <button class="splide__arrow splide__arrow--next">›</button>
         </div>
     </div>
+
+
+    <div class="splide" id="topRatedSlider">
+        <h2>Nejlépe hodnocené filmy</h2>
+        <div class="splide__track">
+            <ul class="splide__list">
+                <!-- Dynamicky generované snímky -->
+                <?php foreach ($topRatedFilms as $film): ?>
+                    <li class="splide__slide">
+                        <div class="film-card">
+                            <img src="img/<?= htmlspecialchars($film['image']) ?>" alt="<?= htmlspecialchars($film['film_name']) ?>">
+                            <h5><?= htmlspecialchars($film['film_name']) ?></h5>
+                            <p><?= htmlspecialchars($film['description']) ?></p>
+                            <div class="star-rating">
+                                <?php
+                                $rating = $film['average_rating'];
+                                for ($i = 1; $i <= 5; $i++):
+                                    $fill = 0;
+                                    if ($i <= floor($rating)) {
+                                        $fill = 100;
+                                    } elseif ($i == ceil($rating)) {
+                                        $fill = ($rating - floor($rating)) * 100;
+                                    }
+                                    ?>
+                                    <div class="star-container">
+                                        <div class="star-background"><i class="fa-regular fa-star"></i></div>
+                                        <div class="star-overlay" style="width: <?= $fill ?>%;">
+                                            <i class="fa-solid fa-star"></i>
+                                        </div>
+                                    </div>
+                                <?php endfor; ?>
+                            </div>
+                            <a href="#" class="btn btn-primary">Více informací</a>
+                        </div>
+                    </li>
+                <?php endforeach; ?>
+            </ul>
+        </div>
+        <!-- Navigační tlačítka -->
+        <div class="splide__arrows">
+            <button class="splide__arrow splide__arrow--prev">‹</button>
+            <button class="splide__arrow splide__arrow--next">›</button>
+        </div>
+    </div>
 </div>
 
 <?php include "layout/footer.php" ?>
 
 <script src="js/bootstrap.bundle.min.js"></script>
 <script>
-    new Splide('#filmSlider', {
-        type       : 'loop',
-        perPage    : 3,
-        gap        : '1rem',
+    new Splide('#newestFilmSlider', {
+        type: 'loop',
+        perPage: 3,
+        perMove: 1,
+        gap: '1rem',
         pagination: false,
-        arrows     : true,
+        arrows: true,
+        fixedWidth: '300px', /* Pevná šířka pro každý slide */
         breakpoints: {
-            768: {
-                perPage: 1,
+            992: {
+                fixedWidth: '250px',
             },
-            1024: {
+            768: {
                 perPage: 2,
             },
-        },
+            576: {
+                perPage: 1,
+                fixedWidth: '100%',
+            }
+        }
+    }).mount();
+
+    new Splide('#topRatedSlider', {
+        type: 'loop',
+        perPage: 3,
+        perMove: 1,
+        gap: '1rem',
+        pagination: false,
+        arrows: true,
+        fixedWidth: '300px', /* Pevná šířka pro každý slide */
+        breakpoints: {
+            992: {
+                fixedWidth: '250px',
+            },
+            768: {
+                perPage: 2,
+            },
+            576: {
+                perPage: 1,
+                fixedWidth: '100%',
+                height: 'auto'
+            }
+        }
     }).mount();
 </script>
 

@@ -56,13 +56,69 @@ body {
         right: 0px;
     }
 }
+.splide {
+    margin-bottom: 50px;
+}
 .film-card {
     padding: 10px;
     display: flex;
     flex-direction: column;
+    height: 100%; /* Zajišťuje stejnou výšku všech karet */
 }
+
 .film-card img {
-    width: auto;
+    width: 100%;
+    height: 500px; /* Pevná výška obrázků */
+    object-fit: cover; /* Zajišťuje, že obrázek vyplní prostor bez deformace */
     border-radius: 8px;
-    margin-bottom: 5px;
+    margin-bottom: 15px;
+}
+
+.film-card h5 {
+    min-height: 50px; /* Zajišťuje konzistentní výšku pro názvy */
+    margin-bottom: 10px;
+}
+
+.film-card p {
+    flex-grow: 1; /* Roztáhne popis, aby vyplnil dostupný prostor */
+    margin-bottom: 15px;
+}
+
+.star-rating {
+    display: inline-flex;
+    gap: 2px;
+}
+
+.star-container {
+    position: relative;
+    margin-bottom: 10px;
+    width: 24px;
+    height: 24px;
+    font-size: 24px; /* Nastavuje velikost ikony */
+}
+
+.star-background, .star-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    font-size: inherit; /* Dědí velikost od kontejneru */
+}
+
+.star-background {
+    width: 100%;
+    color: #ccc; /* Prázdná hvězda */
+}
+
+.star-overlay {
+    overflow: hidden;
+    color: orange; /* Vyplněná část */
+    justify-content: flex-start;
+}
+
+.star-overlay i {
+    flex-shrink: 0;
+    width: 24px; /* Fixní šířka odpovídá velikosti kontejneru */
 }
