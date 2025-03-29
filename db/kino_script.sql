@@ -112,8 +112,8 @@ INSERT INTO role(name) VALUES
 	('admin'), ('film_manager'), ('user');
 
 INSERT INTO user(firstName, lastName, email, password, FK_role) VALUES 
-	('Jan', 'Novák', 'admin', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 0),
-    ('Petr', 'Svoboda', 'film_manager', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 1),
+	('Jan', 'Novák', 'admin@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 0),
+    ('Petr', 'Svoboda', 'film_manager@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 1),
     ('Eva', 'Dvořáková', 'eva.dvorakova@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 2),
     ('Lucie', 'Černá', 'lucie.cerna@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 2),
     ('Karel', 'Procházka', 'karel.prochazka@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 2),
@@ -633,20 +633,26 @@ BEGIN
         film_screening.dateTime,
         hall.id AS hall_id,
         COUNT(DISTINCT seat.id) AS total_seats,
-        COUNT(DISTINCT seat.id) - COUNT(DISTINCT booking_has_seat.FK_seat) AS available_seats
+        COUNT(DISTINCT seat.id) - COUNT(DISTINCT booking_has_seat.FK_seat) AS available_seats,
+        language_dubbing.language AS dubbing_language,
+        IFNULL(language_subtitles.language, 'Žádné titulky') AS subtitles_language
     FROM film_screening
     JOIN hall ON film_screening.FK_hall = hall.id
     JOIN seat ON seat.FK_hall = hall.id
     LEFT JOIN booking ON booking.FK_screening = film_screening.id
     LEFT JOIN booking_has_seat ON booking.id = booking_has_seat.FK_booking
+    LEFT JOIN film_has_dubbing ON film_screening.FK_film_has_dubbing = film_has_dubbing.id
+    LEFT JOIN language AS language_dubbing ON film_has_dubbing.FK_language = language_dubbing.id
+    LEFT JOIN film_has_subtitles ON film_screening.FK_film_has_subtitles = film_has_subtitles.id
+    LEFT JOIN language AS language_subtitles ON film_has_subtitles.FK_language = language_subtitles.id
     WHERE film_screening.FK_film = film_id AND film_screening.dateTime > NOW()
-    GROUP BY film_screening.id, film_screening.dateTime, hall.id
+    GROUP BY film_screening.id, film_screening.dateTime, hall.id, language_dubbing.language, language_subtitles.language
     ORDER BY film_screening.dateTime;
 END //
 
 DELIMITER ;
 
--- CALL upcoming_screenings_for_film(1);
+CALL upcoming_screenings_for_film(1);
 
 -- Funkce 1 - získání hodnocení v jsonu
 DELIMITER //
@@ -748,7 +754,5 @@ DELIMITER ;
 
 -- DELETE FROM film WHERE id = 1;
 -- SELECT * FROM film_screening WHERE FK_film = 1;
-
-
 
 

@@ -58,6 +58,8 @@ $screenings = $stmt->fetchAll();
         <tr>
             <th>Datum a čas</th>
             <th>Sál</th>
+            <th>Jazyk</th>
+            <th>Titulky</th>
             <th>Volná místa</th>
             <th>Akce</th>
         </tr>
@@ -67,9 +69,11 @@ $screenings = $stmt->fetchAll();
             <tr>
                 <td><?= date('d.m.Y H:i', strtotime($screening['dateTime'])) ?></td>
                 <td><?= htmlspecialchars($screening['hall_id']) ?></td>
+                <td><?= htmlspecialchars($screening['dubbing_language']) ?></td>
+                <td><?= htmlspecialchars($screening['subtitles_language']) ?></td>
                 <td><?= htmlspecialchars($screening['available_seats']) ?> / <?= htmlspecialchars($screening['total_seats']) ?></td>
                 <td>
-                    <a href="reservation.php?screening_id=<?= $screening['screening_id'] ?>" class="btn btn-primary">Rezervovat</a>
+                    <a href="reservation_ticket.php?screening_id=<?= $screening['screening_id'] ?>" class="btn btn-primary">Rezervovat</a>
                 </td>
             </tr>
         <?php endforeach; ?>

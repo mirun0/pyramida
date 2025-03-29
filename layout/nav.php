@@ -6,6 +6,11 @@ if (isset($_SESSION['accountId'])) {
     $stmt = $conn->prepare($sql);
     $stmt->execute([$userId]);
     $userFullName = $stmt->fetch();
+
+    $sql = "SELECT FK_role from user where id = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->execute([$userId]);
+    $userRole = $stmt->fetch();
 }
 ?>
 
@@ -22,6 +27,9 @@ if (isset($_SESSION['accountId'])) {
             <ul class="navbar-nav">
                 <li class="nav-item"><a class="nav-link" href="schedule.php">Filmy</a></li>
                 <li class="nav-item"><a class="nav-link" href="#">Kontakty</a></li>
+                <?php
+                if ($userRole['FK_role'] < 2) echo '<li class="nav-item"><a class="nav-link" href="administration.php">Administrace</a></li>';
+                ?>
                 <li class="nav-item"><a class="nav-link" href="profile.php"><i class="fa-solid fa-user"></i> <?php if (isset($_SESSION['loggedAccount'])) echo(htmlspecialchars($userFullName['full_name'])); ?></a></li>
             </ul>
         </div>
