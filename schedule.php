@@ -98,7 +98,7 @@ $totalPages = ceil($totalFilms / $limit);
                         <p class="card-text"><?= htmlspecialchars($film['description']) ?></p>
                         <p><strong>Žánr:</strong> <?= htmlspecialchars($film['genre_name']) ?></p>
                         <p><strong>Hodnocení:</strong> <?= number_format($film['average_rating'], 1) ?> ★</p>
-                        <a href="screeningOfFilm.php?film_id=<?= number_format($film['film_id']) ?>" class="btn btn-primary">Zobrazit promítání</a>
+                        <a href="screening_of_film.php?film_id=<?= number_format($film['film_id']) ?>" class="btn btn-primary">Zobrazit promítání</a>
                     </div>
                 </div>
             </div>
