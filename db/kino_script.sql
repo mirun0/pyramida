@@ -279,43 +279,43 @@ INSERT INTO film_has_subtitles(FK_film, FK_language) VALUES
 
 INSERT INTO film_screening(dateTime, FK_hall, FK_film, FK_film_has_dubbing, FK_film_has_subtitles) VALUES 
     -- Avengers Endgame (sál 1)
-    ('2025-03-16 14:00:00', 1, 1, 1, 1),
-    ('2025-03-17 18:00:00', 1, 1, 2, NULL),
-    ('2025-03-18 20:00:00', 2, 1, 1, 2),
+    ('2025-05-16 14:00:00', 1, 1, 1, 1),
+    ('2025-05-17 18:00:00', 1, 1, 2, NULL),
+    ('2025-05-18 20:00:00', 2, 1, 1, 2),
     -- Interstellar (sál 2)
-    ('2025-03-16 17:00:00', 2, 2, 2, 1),
-    ('2025-03-18 21:00:00', 3, 2, 2, NULL),
-    ('2025-03-19 15:00:00', 1, 2, 1, 2),
+    ('2025-05-16 17:00:00', 2, 2, 2, 1),
+    ('2025-05-18 21:00:00', 3, 2, 2, NULL),
+    ('2025-05-19 15:00:00', 1, 2, 1, 2),
     -- Paranormal Activity (sál 3)
-    ('2025-03-16 20:00:00', 3, 3, 3, NULL),
-    ('2025-03-17 22:00:00', 1, 3, 3, 1),
+    ('2025-05-16 20:00:00', 3, 3, 3, NULL),
+    ('2025-05-17 22:00:00', 1, 3, 3, 1),
     -- Pán prstenů (sál 4)
-    ('2025-03-16 15:30:00', 4, 4, 4, 2),
-    ('2025-03-18 19:00:00', 2, 4, 4, NULL),
-    ('2025-03-19 17:30:00', 3, 4, 5, 1),
+    ('2025-05-16 15:30:00', 4, 4, 4, 2),
+    ('2025-05-18 19:00:00', 2, 4, 4, NULL),
+    ('2025-05-19 17:30:00', 3, 4, 5, 1),
     -- Titanic (sál 2)
-    ('2025-03-16 19:00:00', 2, 5, 5, 1),
-    ('2025-03-17 21:30:00', 3, 5, 6, NULL),
-    ('2025-03-19 14:00:00', 1, 5, 5, 2),
+    ('2025-05-16 19:00:00', 2, 5, 5, 1),
+    ('2025-05-17 21:30:00', 3, 5, 6, NULL),
+    ('2025-05-19 14:00:00', 1, 5, 5, 2),
     -- Shrek (sál 1)
-    ('2025-03-16 21:30:00', 1, 6, 6, NULL),
-    ('2025-03-18 16:00:00', 2, 6, 6, 1),
+    ('2025-05-16 21:30:00', 1, 6, 6, NULL),
+    ('2025-05-18 16:00:00', 2, 6, 6, 1),
     -- Joker (sál 3)
-    ('2025-03-16 16:00:00', 3, 7, 7, 1),
-    ('2025-03-18 22:00:00', 4, 7, 7, NULL),
+    ('2025-05-16 16:00:00', 3, 7, 7, 1),
+    ('2025-05-18 22:00:00', 4, 7, 7, NULL),
     -- Forrest Gump (sál 4)
-    ('2025-03-16 19:30:00', 4, 8, 8, NULL),
-    ('2025-03-17 15:30:00', 3, 8, 8, 1),
+    ('2025-05-16 19:30:00', 4, 8, 8, NULL),
+    ('2025-05-17 15:30:00', 3, 8, 8, 1),
     -- Gladiátor (sál 2)
-    ('2025-03-16 22:00:00', 2, 9, 9, 2),
-    ('2025-03-18 18:30:00', 1, 9, 9, NULL),
+    ('2025-05-16 22:00:00', 2, 9, 9, 2),
+    ('2025-05-18 18:30:00', 1, 9, 9, NULL),
     -- Mad Max (sál 4)
-    ('2025-03-17 17:30:00', 4, 10, 10, 1),
-    ('2025-03-19 20:30:00', 2, 10, 10, 2),
+    ('2025-05-17 17:30:00', 4, 10, 10, 1),
+    ('2025-05-19 20:30:00', 2, 10, 10, 2),
     -- Indiana Jones (sál 3)
-    ('2025-03-17 21:00:00', 3, 11, 11, NULL),
-    ('2025-03-18 17:00:00', 4, 11, 11, 1);
-
+    ('2025-05-17 21:00:00', 3, 11, 11, NULL),
+    ('2025-05-18 17:00:00', 4, 11, 11, 1);
+    
 INSERT INTO booking(FK_user, FK_screening) VALUES
     -- Avengers Endgame
     (5, 1), (12, 1), (33, 1), (21, 1), (45, 2), (9, 2), (27, 2), (11, 3), (39, 3), 
@@ -467,14 +467,17 @@ INSERT INTO review(text, stars, FK_user, FK_film) VALUES
 -- Pohled 1 - filmy podle data vydání
 CREATE VIEW latest_films AS
 SELECT 
-    film.id,
+    film.id AS film_id,
     film.name AS film_name,
     film.releaseDate,
     film.description,
     film.image,
-    genre.name AS genre_name
+    genre.name AS genre_name,
+    AVG(review.stars) AS average_rating
 FROM film
 JOIN genre ON film.FK_genre = genre.id
+LEFT JOIN review ON film.id = review.FK_film
+GROUP BY film.id
 ORDER BY film.releaseDate DESC;
 
 -- select * from latest_films;
@@ -482,7 +485,7 @@ ORDER BY film.releaseDate DESC;
 -- Pohled 2 - nejlépe hodnocené filmy
 CREATE VIEW top_rated_films AS
 SELECT 
-    film.id,
+    film.id AS film_id,
     film.name AS film_name,
     film.description,
     film.image,
@@ -516,6 +519,7 @@ CREATE VIEW upcoming_screenings AS
 SELECT 
     film_screening.id AS screening_id,
     film_screening.dateTime,
+    film.id AS film_id,
     film.name AS film_name,
     hall.id AS hall_id,
     dub_lan.language AS dubbing_language,
@@ -627,14 +631,14 @@ BEGIN
     SELECT 
         film_screening.id AS screening_id,
         film_screening.dateTime,
-        hall.id,
-        COUNT(seat.id) AS total_seats,
-        COUNT(seat.id) - IFNULL(SUM(CASE WHEN booking_has_seat.FK_seat IS NOT NULL THEN 1 ELSE 0 END), 0) AS available_seats
+        hall.id AS hall_id,
+        COUNT(DISTINCT seat.id) AS total_seats,
+        COUNT(DISTINCT seat.id) - COUNT(DISTINCT booking_has_seat.FK_seat) AS available_seats
     FROM film_screening
     JOIN hall ON film_screening.FK_hall = hall.id
     JOIN seat ON seat.FK_hall = hall.id
     LEFT JOIN booking ON booking.FK_screening = film_screening.id
-    LEFT JOIN booking_has_seat ON booking.id = booking_has_seat.FK_booking AND booking_has_seat.FK_seat = seat.id
+    LEFT JOIN booking_has_seat ON booking.id = booking_has_seat.FK_booking
     WHERE film_screening.FK_film = film_id AND film_screening.dateTime > NOW()
     GROUP BY film_screening.id, film_screening.dateTime, hall.id
     ORDER BY film_screening.dateTime;
@@ -642,7 +646,7 @@ END //
 
 DELIMITER ;
 
--- CALL upcoming_screenings_for_film(2);
+-- CALL upcoming_screenings_for_film(1);
 
 -- Funkce 1 - získání hodnocení v jsonu
 DELIMITER //

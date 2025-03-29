@@ -49,7 +49,8 @@ $topRatedFilms = $stmt->fetchAll();
                             <img src="img/<?= htmlspecialchars($film['image']) ?>" alt="<?= htmlspecialchars($film['film_name']) ?>">
                             <h5><?= htmlspecialchars($film['film_name']) ?></h5>
                             <p><?= htmlspecialchars($film['description']) ?></p>
-                            <a href="#" class="btn btn-primary">Více informací</a>
+                            <p><strong>Hodnocení:</strong> <?= number_format($film['average_rating'], 1) ?> ★</p>
+                            <a href="screeningOfFilm.php?film_id=<?= number_format($film['film_id']) ?>" class="btn btn-primary">Více informací</a>
                         </div>
                     </li>
                 <?php endforeach; ?>
@@ -74,26 +75,8 @@ $topRatedFilms = $stmt->fetchAll();
                             <img src="img/<?= htmlspecialchars($film['image']) ?>" alt="<?= htmlspecialchars($film['film_name']) ?>">
                             <h5><?= htmlspecialchars($film['film_name']) ?></h5>
                             <p><?= htmlspecialchars($film['description']) ?></p>
-                            <div class="star-rating">
-                                <?php
-                                $rating = $film['average_rating'];
-                                for ($i = 1; $i <= 5; $i++):
-                                    $fill = 0;
-                                    if ($i <= floor($rating)) {
-                                        $fill = 100;
-                                    } elseif ($i == ceil($rating)) {
-                                        $fill = ($rating - floor($rating)) * 100;
-                                    }
-                                    ?>
-                                    <div class="star-container">
-                                        <div class="star-background"><i class="fa-regular fa-star"></i></div>
-                                        <div class="star-overlay" style="width: <?= $fill ?>%;">
-                                            <i class="fa-solid fa-star"></i>
-                                        </div>
-                                    </div>
-                                <?php endfor; ?>
-                            </div>
-                            <a href="#" class="btn btn-primary">Více informací</a>
+                            <p><strong>Hodnocení:</strong> <?= number_format($film['average_rating'], 1) ?> ★</p>
+                            <a href="screeningOfFilm.php?film_id=<?= number_format($film['film_id']) ?>" class="btn btn-primary">Více informací</a>
                         </div>
                     </li>
                 <?php endforeach; ?>

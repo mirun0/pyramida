@@ -9,9 +9,8 @@
         </button>
         <div class="collapse navbar-collapse justify-content-lg-end text-center" id="navbarNav">
             <ul class="navbar-nav">
-                <li class="nav-item"><a class="nav-link" href="schedule.php">Program</a></li>
-                <li class="nav-item"><a class="nav-link" href="#">Ceník</a></li>
-                <li class="nav-item"><a class="nav-link" href="#">Kontakt</a></li>
+                <li class="nav-item"><a class="nav-link" href="schedule.php">Filmy</a></li>
+                <li class="nav-item"><a class="nav-link" href="#">Kontakty</a></li>
                 <li class="nav-item"><a class="nav-link" href="profile.php"><i class="fa-solid fa-user"></i></a></li>
             </ul>
         </div>

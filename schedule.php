@@ -9,14 +9,14 @@ $genres = $stmt->fetchAll();
 
 // Získání aktuální stránky (výchozí je 1)
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-$limit = 20;
+$limit = 18;
 $offset = ($page - 1) * $limit;
 
 // Získání vybraného žánru (pokud byl vybrán)
 $selectedGenre = isset($_GET['genre']) ? (int)$_GET['genre'] : null;
 
 // SQL dotaz s filtrováním podle žánru (pokud je vybrán)
-$sql = "SELECT film.id, film.name AS film_name, film.description, film.image AS film_image, genre.name AS genre_name, 
+$sql = "SELECT film.id AS film_id, film.name AS film_name, film.description, film.image AS film_image, genre.name AS genre_name, 
                COALESCE(AVG(review.stars), 0) AS average_rating 
         FROM film
         JOIN genre ON film.FK_genre = genre.id
@@ -98,7 +98,7 @@ $totalPages = ceil($totalFilms / $limit);
                         <p class="card-text"><?= htmlspecialchars($film['description']) ?></p>
                         <p><strong>Žánr:</strong> <?= htmlspecialchars($film['genre_name']) ?></p>
                         <p><strong>Hodnocení:</strong> <?= number_format($film['average_rating'], 1) ?> ★</p>
-                        <a href="#" class="btn btn-primary">Zobrazit promítání</a>
+                        <a href="screeningOfFilm.php?film_id=<?= number_format($film['film_id']) ?>" class="btn btn-primary">Zobrazit promítání</a>
                     </div>
                 </div>
             </div>
@@ -106,7 +106,7 @@ $totalPages = ceil($totalFilms / $limit);
     </div>
 
     <!-- Stránkování -->
-    <nav>
+    <div>
         <ul class="pagination justify-content-center">
             <?php for ($i = 1; $i <= $totalPages; $i++): ?>
                 <li class="page-item <?= $i == $page ? 'active' : '' ?>">
@@ -114,7 +114,7 @@ $totalPages = ceil($totalFilms / $limit);
                 </li>
             <?php endfor; ?>
         </ul>
-    </nav>
+    </div>
 </div>
 
 <?php include "layout/footer.php" ?>
