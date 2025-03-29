@@ -28,7 +28,7 @@ if (isset($_SESSION['accountId'])) {
                 <li class="nav-item"><a class="nav-link" href="schedule.php">Filmy</a></li>
                 <li class="nav-item"><a class="nav-link" href="#">Kontakty</a></li>
                 <?php
-                if ($userRole['FK_role'] < 2) echo '<li class="nav-item"><a class="nav-link" href="administration.php">Administrace</a></li>';
+                if (isset($userRole['FK_role']) &&  $userRole['FK_role'] < 2) echo '<li class="nav-item"><a class="nav-link" href="administration.php">Administrace</a></li>';
                 ?>
                 <li class="nav-item"><a class="nav-link" href="profile.php"><i class="fa-solid fa-user"></i> <?php if (isset($_SESSION['loggedAccount'])) echo(htmlspecialchars($userFullName['full_name'])); ?></a></li>
             </ul>
