@@ -403,10 +403,11 @@ INSERT INTO booking_has_seat(FK_booking, FK_seat) VALUES
 INSERT INTO review(text, stars, FK_user, FK_film) VALUES
     -- Film 1
     ('Skvělý film! Výborné herecké výkony a napínavý děj.', 5, 3, 1),
-    ('Dobrý film, ale konec mohl být lepší.', 4, 7, 1),
+    ('Skvělý film.', 5, 7, 1),
     -- Film 2
     ('Perfektní atmosféra, napětí až do konce!', 5, 8, 2),
     ('Trochu pomalejší rozjezd, ale celkově super.', 4, 15, 2),
+    ('Pecička.', 5, 8, 2),
     -- Film 3
     ('Děj byl trochu předvídatelný, ale jinak fajn.', 3, 6, 3),
     ('Výborné efekty a zajímavá zápletka!', 5, 19, 3),
