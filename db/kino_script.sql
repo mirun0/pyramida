@@ -757,6 +757,57 @@ DELIMITER ;
 -- DELETE FROM film WHERE id = 1;
 -- SELECT * FROM film_screening WHERE FK_film = 1;
 
+
+
+
+/*
+DELIMITER //
+
+CREATE PROCEDURE get_available_seats(in_screening_id INT UNSIGNED)
+BEGIN
+    SELECT seat.id
+    FROM seat
+    JOIN film_screening ON seat.FK_hall = film_screening.FK_hall
+    WHERE film_screening.id = in_screening_id
+    AND seat.id NOT IN (
+        SELECT booking_has_seat.FK_seat
+        FROM booking_has_seat
+        JOIN booking ON booking_has_seat.FK_booking = booking.id
+        WHERE booking.FK_screening = in_screening_id
+    );
+END //
+
+DELIMITER ;
+
+CALL get_available_seats(1);
+
+*/
+
+DELIMITER //
+
+CREATE function get_available_seats_count(in_screening_id INT UNSIGNED) returns int
+BEGIN
+    DECLARE count_seats INT;
+    
+    SELECT count(*)
+    into count_seats
+    FROM seat
+    JOIN film_screening ON seat.FK_hall = film_screening.FK_hall
+    WHERE film_screening.id = in_screening_id
+    AND seat.id NOT IN (
+        SELECT booking_has_seat.FK_seat
+        FROM booking_has_seat
+        JOIN booking ON booking_has_seat.FK_booking = booking.id
+        WHERE booking.FK_screening = in_screening_id
+    );
+    return count_seats;
+END //
+
+DELIMITER ;
+
+-- select get_available_seats_count(1);
+
+
 delimiter //
 create procedure get_ticket_information(in_screening_id int)
 begin
@@ -764,19 +815,33 @@ begin
 		film.name as name,
 		film_screening.dateTime as datetime,
         film_screening.FK_hall as hall_id,
-        hall.*,
-        seat.*,
-        booking_has_seat.*
+        get_available_seats_count(in_screening_id) as available_seats
     from film_screening
     join film on film.id = film_screening.FK_film
-    join hall on film_screening.FK_hall = hall.id
-    join seat on seat.FK_hall = seat.id
-    join booking_has_seat on booking_has_seat.FK_seat = seat.id
-    where film_screening.id = in_screening_id and seat.FK_hall = hall.id;    
+    where film_screening.id = in_screening_id;
 end //
 
 delimiter ;
 
-call get_ticket_information(23);
+call get_ticket_information(20);
 
+
+delimiter //
+create procedure get_seat_information(in_screening_id int)
+begin
+	SELECT seat.id
+    FROM seat
+    JOIN film_screening ON seat.FK_hall = film_screening.FK_hall
+    WHERE film_screening.id = in_screening_id
+    AND seat.id NOT IN (
+        SELECT booking_has_seat.FK_seat
+        FROM booking_has_seat
+        JOIN booking ON booking_has_seat.FK_booking = booking.id
+        WHERE booking.FK_screening = in_screening_id
+    );
+end //
+
+delimiter ;
+
+call get_seat_information(20);
 
