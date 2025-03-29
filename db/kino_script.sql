@@ -24,6 +24,8 @@ CREATE INDEX idx_user_email ON user(email(191));
 
 CREATE TABLE IF NOT EXISTS hall (
 	id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    path varchar(200) not null,
+    num_of_seats int unsigned not null,
 	PRIMARY KEY (id)
 ) ENGINE = MyISAM;
 
@@ -112,59 +114,59 @@ INSERT INTO role(name) VALUES
 	('admin'), ('film_manager'), ('user');
 
 INSERT INTO user(firstName, lastName, email, password, FK_role) VALUES 
-	('Jan', 'Novák', 'admin', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 0),
-    ('Petr', 'Svoboda', 'film_manager', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 1),
-    ('Eva', 'Dvořáková', 'eva.dvorakova@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 2),
-    ('Lucie', 'Černá', 'lucie.cerna@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 2),
-    ('Karel', 'Procházka', 'karel.prochazka@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 2),
-    ('Marie', 'Veselá', 'marie.vesela@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 2),
-    ('Adam', 'Král', 'adam.kral@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 2),
-    ('Tereza', 'Benešová', 'tereza.benesova@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 2),
-    ('Jakub', 'Fiala', 'jakub.fiala@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 2),
-    ('Michaela', 'Sedláčková', 'michaela.sedlackova@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 2),
-    ('Ondřej', 'Malý', 'ondrej.maly@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 2),
-    ('Barbora', 'Kučerová', 'barbora.kucerova@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 2),
-    ('Filip', 'Horák', 'filip.horak@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 2),
-    ('Veronika', 'Marešová', 'veronika.maresova@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 2),
-    ('David', 'Pokorný', 'david.pokorny@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 2),
-    ('Anna', 'Kratochvílová', 'anna.kratochvilova@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 2),
-    ('Tomáš', 'Němec', 'tomas.nemec@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 2),
-    ('Simona', 'Pavlíčková', 'simona.pavlickova@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 2),
-    ('Radek', 'Urban', 'radek.urban@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 2),
-    ('Kateřina', 'Dostálová', 'katerina.dostalova@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 2),
-    ('Lukáš', 'Polák', 'lukas.polak@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 2),
-    ('Nikola', 'Soukupová', 'nikola.soukupova@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 2),
-    ('Dominik', 'Šimek', 'dominik.simek@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 2),
-    ('Hana', 'Zemanová', 'hana.zemanova@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 2),
-    ('Martin', 'Vávra', 'martin.vavra@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 2),
-    ('Patrik', 'Mach', 'patrik.mach@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 2),
-    ('Alena', 'Šťastná', 'alena.stastna@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 2),
-    ('Jiří', 'Kopecký', 'jiri.kopecky@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 2),
-    ('Ivana', 'Vlčková', 'ivana.vlckova@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 2),
-    ('Roman', 'Holý', 'roman.holy@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 2),
-    ('Gabriela', 'Matoušková', 'gabriela.matouskova@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 2),
-    ('Viktor', 'Tůma', 'viktor.tuma@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 2),
-    ('Eliška', 'Kočová', 'eliska.kocova@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 2),
-    ('Pavel', 'Bartoš', 'pavel.bartos@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 2),
-    ('Jana', 'Havelková', 'jana.havelkova@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 2),
-    ('Štěpán', 'Klimeš', 'stepan.klimes@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 2),
-    ('Monika', 'Vítková', 'monika.vitkova@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 2),
-    ('Vojtěch', 'Hruška', 'vojtech.hruska@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 2),
-    ('Kristýna', 'Bláhová', 'kristyna.blahova@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 2),
-    ('Robert', 'Kříž', 'robert.kriz@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 2),
-    ('Adéla', 'Krejčová', 'adela.krejcova@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 2),
-    ('Marek', 'Štěpánek', 'marek.stepanek@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 2),
-    ('Denisa', 'Kvasničková', 'denisa.kvasnickova@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 2),
-    ('Jaroslav', 'Růžička', 'jaroslav.ruzicka@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 2),
-    ('Veronika', 'Beránková', 'veronika.berankova@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 2),
-    ('Daniel', 'Vašíček', 'daniel.vasicek@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 2),
-    ('Tereza', 'Horká', 'tereza.horka@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 2),
-    ('Kamil', 'Svatoš', 'kamil.svatos@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 2),
-    ('Andrea', 'Pospíšilová', 'andrea.pospisilova@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 2),
-    ('Miloslav', 'Hájek', 'miloslav.hajek@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 2);
+	('Jan', 'Novák', 'admin', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 1),
+    ('Petr', 'Svoboda', 'film_manager', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 2),
+    ('Eva', 'Dvořáková', 'eva.dvorakova@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 3),
+    ('Lucie', 'Černá', 'lucie.cerna@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 3),
+    ('Karel', 'Procházka', 'karel.prochazka@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 3),
+    ('Marie', 'Veselá', 'marie.vesela@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 3),
+    ('Adam', 'Král', 'adam.kral@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 3),
+    ('Tereza', 'Benešová', 'tereza.benesova@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 3),
+    ('Jakub', 'Fiala', 'jakub.fiala@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 3),
+    ('Michaela', 'Sedláčková', 'michaela.sedlackova@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 3),
+    ('Ondřej', 'Malý', 'ondrej.maly@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 3),
+    ('Barbora', 'Kučerová', 'barbora.kucerova@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 3),
+    ('Filip', 'Horák', 'filip.horak@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 3),
+    ('Veronika', 'Marešová', 'veronika.maresova@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 3),
+    ('David', 'Pokorný', 'david.pokorny@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 3),
+    ('Anna', 'Kratochvílová', 'anna.kratochvilova@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 3),
+    ('Tomáš', 'Němec', 'tomas.nemec@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 3),
+    ('Simona', 'Pavlíčková', 'simona.pavlickova@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 3),
+    ('Radek', 'Urban', 'radek.urban@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 3),
+    ('Kateřina', 'Dostálová', 'katerina.dostalova@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 3),
+    ('Lukáš', 'Polák', 'lukas.polak@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 3),
+    ('Nikola', 'Soukupová', 'nikola.soukupova@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 3),
+    ('Dominik', 'Šimek', 'dominik.simek@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 3),
+    ('Hana', 'Zemanová', 'hana.zemanova@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 3),
+    ('Martin', 'Vávra', 'martin.vavra@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 3),
+    ('Patrik', 'Mach', 'patrik.mach@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 3),
+    ('Alena', 'Šťastná', 'alena.stastna@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 3),
+    ('Jiří', 'Kopecký', 'jiri.kopecky@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 3),
+    ('Ivana', 'Vlčková', 'ivana.vlckova@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 3),
+    ('Roman', 'Holý', 'roman.holy@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 3),
+    ('Gabriela', 'Matoušková', 'gabriela.matouskova@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 3),
+    ('Viktor', 'Tůma', 'viktor.tuma@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 3),
+    ('Eliška', 'Kočová', 'eliska.kocova@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 3),
+    ('Pavel', 'Bartoš', 'pavel.bartos@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 3),
+    ('Jana', 'Havelková', 'jana.havelkova@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 3),
+    ('Štěpán', 'Klimeš', 'stepan.klimes@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 3),
+    ('Monika', 'Vítková', 'monika.vitkova@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 3),
+    ('Vojtěch', 'Hruška', 'vojtech.hruska@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 3),
+    ('Kristýna', 'Bláhová', 'kristyna.blahova@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 3),
+    ('Robert', 'Kříž', 'robert.kriz@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 3),
+    ('Adéla', 'Krejčová', 'adela.krejcova@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 3),
+    ('Marek', 'Štěpánek', 'marek.stepanek@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 3),
+    ('Denisa', 'Kvasničková', 'denisa.kvasnickova@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 3),
+    ('Jaroslav', 'Růžička', 'jaroslav.ruzicka@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 3),
+    ('Veronika', 'Beránková', 'veronika.berankova@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 3),
+    ('Daniel', 'Vašíček', 'daniel.vasicek@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 3),
+    ('Tereza', 'Horká', 'tereza.horka@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 3),
+    ('Kamil', 'Svatoš', 'kamil.svatos@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 3),
+    ('Andrea', 'Pospíšilová', 'andrea.pospisilova@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 3),
+    ('Miloslav', 'Hájek', 'miloslav.hajek@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 3);
         
-INSERT INTO hall() VALUES 
-	(), (), (), ();
+INSERT INTO hall(path, num_of_seats) VALUES 
+	("hall_1.txt", 30), ("hall_2.txt", 30), ("hall_3.txt", 30), ("hall_4.txt", 30);
 
 INSERT INTO seat(id, FK_hall) VALUES 
     -- Sál 1
@@ -749,6 +751,26 @@ DELIMITER ;
 -- DELETE FROM film WHERE id = 1;
 -- SELECT * FROM film_screening WHERE FK_film = 1;
 
+delimiter //
+create procedure get_ticket_information(in_screening_id int)
+begin
+	select 
+		film.name as name,
+		film_screening.dateTime as datetime,
+        film_screening.FK_hall as hall_id,
+        hall.*,
+        seat.*,
+        booking_has_seat.*
+    from film_screening
+    join film on film.id = film_screening.FK_film
+    join hall on film_screening.FK_hall = hall.id
+    join seat on seat.FK_hall = seat.id
+    join booking_has_seat on booking_has_seat.FK_seat = seat.id
+    where film_screening.id = in_screening_id and seat.FK_hall = hall.id;    
+end //
 
+delimiter ;
+
+call get_ticket_information(23);
 
 

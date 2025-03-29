@@ -2,7 +2,7 @@
 
 $servername = "localhost";
 $username = "root";
-$password = "xHeslo123";
+$password = "";
 $dbname = "cinema";
 
 try {

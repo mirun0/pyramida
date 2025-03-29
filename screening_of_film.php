@@ -69,7 +69,7 @@ $screenings = $stmt->fetchAll();
                 <td><?= htmlspecialchars($screening['hall_id']) ?></td>
                 <td><?= htmlspecialchars($screening['available_seats']) ?> / <?= htmlspecialchars($screening['total_seats']) ?></td>
                 <td>
-                    <a href="reservation.php?screening_id=<?= $screening['screening_id'] ?>" class="btn btn-primary">Rezervovat</a>
+                    <a href="reservation_tickets.php?screening_id=<?= $screening['screening_id'] ?>" class="btn btn-primary">Rezervovat</a>
                 </td>
             </tr>
         <?php endforeach; ?>
