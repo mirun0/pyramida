@@ -22,9 +22,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     if ($verification) {
         if ($newPassword === $confirmPassword) {
             $hash = password_hash($newPassword, PASSWORD_DEFAULT);
-            $sql = "UPDATE user SET password = ? WHERE id = ?";
+            $sql = "SELECT change_user_password(?,?)";
             $stmt = $conn->prepare($sql);
-            $stmt->execute([$hash, $accountId]);
+            $stmt->execute([$accountId, $hash]);
 
             header("Location: profile.php?success=updated");
             exit;

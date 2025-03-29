@@ -1,3 +1,14 @@
+<?php
+session_start();
+if (isset($_SESSION['accountId'])) {
+    $userId = $_SESSION['accountId'];
+    $sql = "SELECT get_user_full_name(?) as full_name";
+    $stmt = $conn->prepare($sql);
+    $stmt->execute([$userId]);
+    $userFullName = $stmt->fetch();
+}
+?>
+
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container-fluid">
         <a class="navbar-brand d-flex align-items-center" href="index.php">
@@ -11,7 +22,7 @@
             <ul class="navbar-nav">
                 <li class="nav-item"><a class="nav-link" href="schedule.php">Filmy</a></li>
                 <li class="nav-item"><a class="nav-link" href="#">Kontakty</a></li>
-                <li class="nav-item"><a class="nav-link" href="profile.php"><i class="fa-solid fa-user"></i></a></li>
+                <li class="nav-item"><a class="nav-link" href="profile.php"><i class="fa-solid fa-user"></i> <?php if (isset($_SESSION['loggedAccount'])) echo(htmlspecialchars($userFullName['full_name'])); ?></a></li>
             </ul>
         </div>
     </div>
