@@ -1,7 +1,7 @@
 <?php 
 include 'db/db_connect.php';
 
-if (isset($_POST['add'])) {
+if (isset($_POST['update'])) {
     $name = $_POST['name'];
     $length = $_POST['length'];
     $releaseDate = $_POST['releaseDate'];
@@ -25,6 +25,10 @@ if (isset($_POST['add'])) {
     }
     if (empty($genre) || !filter_var($genre, FILTER_VALIDATE_INT)) {
         $errors[] = "Vyberte platný žánr.";
+    } else {
+        $stmt = $conn->query("SELECT * FROM genre");
+        $stmt->execute();
+        if ($stmt->fetch() === null) $errors[] = "Vyberte platný žánr.";
     }
     if (!isset($_FILES['image']) || $_FILES['image']['error'] != 0) {
         $errors[] = "Obrázek je povinný.";
@@ -41,14 +45,16 @@ if (isset($_POST['add'])) {
             echo "<p style='color: red;'>$error</p>";
         }
     } else {
-        // Data jsou validní, můžeš pokračovat s uložením
         $fileName = basename($_FILES['image']['name']);
-        $sql = "CALL add_film(?, ?, ?, ?, ?, ?)";
+        $sql = "UPDATE film SET name = ?, length = ?, releaseDate = ?, description = ?, image = ?, FK_genre = ? WHERE id = ?";
         $stmt = $conn->prepare($sql);
-        $stmt->execute([$name, $length, $releaseDate, $description, $fileName, $genre]);
+        $stmt->execute([$name, $length, $releaseDate, $description, $fileName, $genre, $filmId]);
         header("Location: admin.php");
         exit();
     }
+    
+    // header("Location: admin.php");
+    // exit();
 }
 ?>
 
@@ -69,12 +75,23 @@ if (isset($_POST['add'])) {
     <script src="https://cdn.jsdelivr.net/npm/@splidejs/splide/dist/js/splide.min.js"></script>
 </head>
 <body>
-<?php include "layout/nav.php"?>
-<?php
-if (!isset($_SESSION['loggedAccount']) || $_SESSION['accountId'] !== 1 && $_SESSION['accountId'] !== 2) {
-    header("Location: login.php");
-    exit;
-}
+<?php 
+    include "layout/nav.php";
+
+    if (!isset($_SESSION['loggedAccount']) || $_SESSION['accountId'] !== 1 && $_SESSION['accountId'] !== 2) {
+        header("Location: login.php");
+        exit;
+    }
+
+    $filmId = (int)$_GET['film_id'];
+    $sql = "SELECT name, length, releaseDate, description, image, FK_genre AS genre FROM film WHERE id = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->execute([$filmId]);
+    $film = $stmt->fetch();
+    if (!isset($film)) {
+        header("Location: login.php");
+        exit;
+    }
 ?>
 
 <div class="container mt-4">
@@ -82,19 +99,19 @@ if (!isset($_SESSION['loggedAccount']) || $_SESSION['accountId'] !== 1 && $_SESS
     <form method="post" enctype="multipart/form-data">
         <div class="mb-3">
             <label class="form-label">Název filmu</label>
-            <input type="text" name="name" class="form-control" required>
+            <input type="text" name="name" class="form-control" value="<?= $film['name'] ?>" required>
         </div>
         <div class="mb-3">
             <label class="form-label">Délka (minuty)</label>
-            <input type="number" name="length" class="form-control" required>
+            <input type="number" name="length" class="form-control" value="<?= $film['length'] ?>" required>
         </div>
         <div class="mb-3">
             <label class="form-label">Datum vydání</label>
-            <input type="date" name="releaseDate" class="form-control" required>
+            <input type="date" name="releaseDate" class="form-control" value="<?= $film['releaseDate'] ?>" required>
         </div>
         <div class="mb-3">
             <label class="form-label">Popis</label>
-            <textarea name="description" class="form-control" required></textarea>
+            <textarea name="description" class="form-control" required><?= $film['description'] ?></textarea>
         </div>
         <div class="mb-3">
             <label class="form-label">Obrázek</label>
@@ -107,12 +124,12 @@ if (!isset($_SESSION['loggedAccount']) || $_SESSION['accountId'] !== 1 && $_SESS
                     $genres = $conn->query("SELECT * FROM genre");
                     $genres->execute();
                     while ($row = $genres->fetch(PDO::FETCH_ASSOC)) {
-                        echo "<option value='{$row['id']}'" . ">{$row['name']}</option>";
+                        echo "<option value='{$row['id']}'" . ($row['id'] === $film['genre'] ? " selected" : "") . ">{$row['name']}</option>";
                     }
                 ?>
             </select>
         </div>
-        <button type="submit" class="btn btn-primary" name="add">Uložit</button>
+        <button type="submit" class="btn btn-primary" name="update">Uložit</button>
         <a href="administration.php" class="btn btn-secondary">Zpět</a>
     </form>
 </div>

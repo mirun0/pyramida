@@ -20,6 +20,8 @@ CREATE TABLE IF NOT EXISTS user (
 	PRIMARY KEY (id)
 ) ENGINE = MyISAM;
 
+select * from user;
+
 CREATE INDEX idx_user_email ON user(email(191));
 
 CREATE TABLE IF NOT EXISTS hall (
@@ -34,6 +36,8 @@ CREATE TABLE IF NOT EXISTS genre (
 	name VARCHAR(30) NOT NULL,
 	PRIMARY KEY (id)
 ) ENGINE = MyISAM;
+
+select * from genre;
 
 CREATE INDEX idx_genre_name ON genre(name);
 
@@ -475,7 +479,7 @@ SELECT
     film.description,
     film.image,
     genre.name AS genre_name,
-    AVG(review.stars) AS average_rating
+    COALESCE(AVG(review.stars), 0) AS average_rating
 FROM film
 JOIN genre ON film.FK_genre = genre.id
 LEFT JOIN review ON film.id = review.FK_film
@@ -542,15 +546,23 @@ ORDER BY film_screening.dateTime ASC;
 DELIMITER //
 
 CREATE PROCEDURE add_film (
-	film_name VARCHAR(60),
-    film_length INT UNSIGNED,
-    release_date DATE,
+	name VARCHAR(60),
+    length INT UNSIGNED,
+    releaseDate DATE,
     description LONGTEXT,
-    image_url VARCHAR(255),
-    genre_id INT UNSIGNED
+    image VARCHAR(255),
+    FK_genre INT UNSIGNED
 ) BEGIN
-	INSERT INTO film(name, length, releaseDate, description, image, FK_genre)
-    VALUES (film_name, film_length, release_date, description, image_url, genre_id);
+	DECLARE genre_exists INT;
+    SELECT COUNT(*) INTO genre_exists FROM genre WHERE id = FK_genre;
+
+    IF genre_exists = 0 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Zadaný žánr neexistuje';
+    ELSE
+        INSERT INTO film(name, length, releaseDate, description, image, FK_genre)
+        VALUES (name, length, releaseDate, description, image, FK_genre);
+    END IF;
 END //
 
 DELIMITER ;
