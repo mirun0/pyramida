@@ -39,22 +39,26 @@ if (isset($_POST['update'])) {
         }
     }
 
-    // Pokud jsou chyby, vypíšeme je
     if (!empty($errors)) {
         foreach ($errors as $error) {
             echo "<p style='color: red;'>$error</p>";
         }
     } else {
+        $filmId = (int)$_GET['film_id'];
+        $uploadDir = 'img/';
         $fileName = basename($_FILES['image']['name']);
-        $sql = "UPDATE film SET name = ?, length = ?, releaseDate = ?, description = ?, image = ?, FK_genre = ? WHERE id = ?";
-        $stmt = $conn->prepare($sql);
-        $stmt->execute([$name, $length, $releaseDate, $description, $fileName, $genre, $filmId]);
-        header("Location: admin.php");
-        exit();
+        $targetFilePath = $uploadDir . $fileName;
+        if (move_uploaded_file($_FILES['image']['tmp_name'], $targetFilePath)) {
+            $fileName = basename($_FILES['image']['name']);
+            $sql = "UPDATE film SET name = ?, length = ?, releaseDate = ?, description = ?, image = ?, FK_genre = ? WHERE id = ?";
+            $stmt = $conn->prepare($sql);
+            $stmt->execute([$name, $length, $releaseDate, $description, $fileName, $genre, $filmId]);
+            header("Location: film_administration.php");
+            exit();
+        } else {
+            echo "<p style='color: red;'>Nepodařilo se přesunout obrázek</p>";
+        }
     }
-    
-    // header("Location: admin.php");
-    // exit();
 }
 ?>
 
@@ -78,8 +82,19 @@ if (isset($_POST['update'])) {
 <?php 
     include "layout/nav.php";
 
-    if (!isset($_SESSION['loggedAccount']) || $_SESSION['accountId'] !== 1 && $_SESSION['accountId'] !== 2) {
+    session_start();
+    if (!isset($_SESSION['loggedAccount'])) {
         header("Location: login.php");
+        exit;
+    }
+    
+    $sql = "SELECT FK_role from user where id = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->execute([$_SESSION['accountId']]);
+    $userRole = $stmt->fetch();
+    
+    if ($userRole['FK_role'] > 1) {
+        header("Location: index.php");
         exit;
     }
 
@@ -130,7 +145,7 @@ if (isset($_POST['update'])) {
             </select>
         </div>
         <button type="submit" class="btn btn-primary" name="update">Uložit</button>
-        <a href="administration.php" class="btn btn-secondary">Zpět</a>
+        <a href="film_administration.php" class="btn btn-secondary">Zpět</a>
     </form>
 </div>
 

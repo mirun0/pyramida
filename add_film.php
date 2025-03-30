@@ -57,13 +57,17 @@ if (isset($_POST['add'])) {
             echo "<p style='color: red;'>$error</p>";
         }
     } else {
-        // Data jsou validní, můžeš pokračovat s uložením
+        $uploadDir = 'img/';
         $fileName = basename($_FILES['image']['name']);
-        $sql = "CALL add_film(?, ?, ?, ?, ?, ?)";
-        $stmt = $conn->prepare($sql);
-        $stmt->execute([$name, $length, $releaseDate, $description, $fileName, $genre]);
-        header("Location: admin.php");
-        exit();
+        $targetFilePath = $uploadDir . $fileName;
+        if (move_uploaded_file($_FILES['image']['tmp_name'], $targetFilePath)) {
+            $sql = "CALL add_film(?, ?, ?, ?, ?, ?)";
+            $stmt = $conn->prepare($sql);
+            $stmt->execute([$name, $length, $releaseDate, $description, $fileName, $genre]);
+            header("Location: film_administration.php");
+            exit();
+        } else
+            echo "<p style='color: red;'>Nepodařilo se nahrát obrázek</p>";
     }
 }
 ?>
@@ -123,7 +127,7 @@ if (isset($_POST['add'])) {
             </select>
         </div>
         <button type="submit" class="btn btn-primary" name="add">Uložit</button>
-        <a href="administration.php" class="btn btn-secondary">Zpět</a>
+        <a href="film_administration.php" class="btn btn-secondary">Zpět</a>
     </form>
 </div>
 

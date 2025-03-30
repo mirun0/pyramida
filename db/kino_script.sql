@@ -22,6 +22,9 @@ CREATE TABLE IF NOT EXISTS user (
 
 select * from user;
 
+select * from film;
+UPDATE film SET name = "Blbost", releaseDate = "2024-11-6", length = 55, description = "Magor", image = "csdcscsd.jpg", FK_genre = 2 WHERE id = 21;
+
 CREATE INDEX idx_user_email ON user(email(191));
 
 CREATE TABLE IF NOT EXISTS hall (
@@ -798,6 +801,7 @@ CALL get_available_seats(1);
 DELIMITER //
 
 CREATE function get_available_seats_count(in_screening_id INT UNSIGNED) returns int
+READS SQL DATA
 BEGIN
     DECLARE count_seats INT;
     
