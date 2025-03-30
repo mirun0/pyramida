@@ -1,4 +1,4 @@
-<?php 
+<?php
 include 'db/db_connect.php';
 session_start();
 
@@ -23,7 +23,7 @@ if (isset($_POST['add'])) {
     $releaseDate = $_POST['releaseDate'];
     $description = $_POST['description'];
     $genre = $_POST['genre'];
-        
+
     if (empty($name)) {
         $errors[] = "Název filmu je povinný.";
     }
@@ -118,11 +118,11 @@ if (isset($_POST['add'])) {
             <label class="form-label">Žánr</label>
             <select name="genre" class="form-control">
                 <?php
-                    $genres = $conn->query("SELECT * FROM genre");
-                    $genres->execute();
-                    while ($row = $genres->fetch(PDO::FETCH_ASSOC)) {
-                        echo "<option value='{$row['id']}'" . ">{$row['name']}</option>";
-                    }
+                $genres = $conn->query("SELECT * FROM genre");
+                $genres->execute();
+                while ($row = $genres->fetch(PDO::FETCH_ASSOC)) {
+                    echo "<option value='{$row['id']}'" . ">{$row['name']}</option>";
+                }
                 ?>
             </select>
         </div>

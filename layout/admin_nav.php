@@ -24,10 +24,9 @@ if (isset($_SESSION['accountId'])) {
         </button>
         <div class="collapse navbar-collapse justify-content-lg-end text-center" id="navbarNav">
             <ul class="navbar-nav">
-                <li class="nav-item"><a class="nav-link" href="schedule.php">Filmy</a></li>
-                <li class="nav-item"><a class="nav-link" href="#">Kontakty</a></li>
+                <li class="nav-item"><a class="nav-link" href="film_administration.php">Filmy</a></li>
                 <?php
-                if (isset($userRole['FK_role']) &&  $userRole['FK_role'] < 3) echo '<li class="nav-item"><a class="nav-link" href="film_administration.php">Administrace</a></li>';
+                if (isset($userRole['FK_role']) &&  $userRole['FK_role'] < 2) echo '<li class="nav-item"><a class="nav-link" href="#">Uživatelé</a></li>';
                 ?>
                 <li class="nav-item"><a class="nav-link" href="profile.php"><i class="fa-solid fa-user"></i> <?php if (isset($_SESSION['loggedAccount'])) echo(htmlspecialchars($userFullName['full_name'])); ?></a></li>
             </ul>

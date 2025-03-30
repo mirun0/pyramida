@@ -13,39 +13,53 @@ $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $limit = 18;
 $offset = ($page - 1) * $limit;
 
-// Získání vybraného žánru (pokud byl vybrán)
+// Získání parametrů pro filtrování
 $selectedGenre = isset($_GET['genre']) ? (int)$_GET['genre'] : null;
+$searchTerm = isset($_GET['search']) ? trim($_GET['search']) : '';
 
-// SQL dotaz s filtrováním podle žánru (pokud je vybrán)
-$sql = "SELECT film.id AS film_id, film.name AS film_name, film.description, film.image AS film_image, genre.name AS genre_name, 
+// SQL dotaz s podmínkami
+$sql = "SELECT film.id AS film_id, film.name AS film_name, film.description, film.image AS film_image, genre.name AS genre_name, film.releaseDate AS film_date,
                COALESCE(AVG(review.stars), 0) AS average_rating 
         FROM film
         JOIN genre ON film.FK_genre = genre.id
         LEFT JOIN review ON film.id = review.FK_film";
 
-if ($selectedGenre) {
-    $sql .= " WHERE genre.id = :genre";
+$whereConditions = [];
+$params = [];
+
+if (!empty($searchTerm)) {
+    $whereConditions[] = "film.name LIKE :search";
+    $params[':search'] = '%' . $searchTerm . '%';
 }
 
-$sql .= " GROUP BY film.id LIMIT :limit OFFSET :offset";
+if ($selectedGenre) {
+    $whereConditions[] = "genre.id = :genre";
+    $params[':genre'] = $selectedGenre;
+}
+
+if (!empty($whereConditions)) {
+    $sql .= " WHERE " . implode(" AND ", $whereConditions);
+}
+
+$sql .= " GROUP BY film.id ORDER BY film.releaseDate DESC LIMIT :limit OFFSET :offset";
 
 $stmt = $conn->prepare($sql);
-if ($selectedGenre) {
-    $stmt->bindParam(':genre', $selectedGenre, PDO::PARAM_INT);
+foreach ($params as $key => &$val) {
+    $stmt->bindParam($key, $val);
 }
 $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
 $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
 $stmt->execute();
 $films = $stmt->fetchAll();
 
-// Počet filmů pro výpočet celkových stránek
-$sql = "SELECT COUNT(*) FROM film";
-if ($selectedGenre) {
-    $sql .= " WHERE FK_genre = :genre";
+// Počet filmů pro stránkování
+$sql = "SELECT COUNT(*) FROM film JOIN genre ON film.FK_genre = genre.id";
+if (!empty($whereConditions)) {
+    $sql .= " WHERE " . implode(" AND ", $whereConditions);
 }
 $stmt = $conn->prepare($sql);
-if ($selectedGenre) {
-    $stmt->bindParam(':genre', $selectedGenre, PDO::PARAM_INT);
+foreach ($params as $key => &$val) {
+    $stmt->bindParam($key, $val);
 }
 $stmt->execute();
 $totalFilms = $stmt->fetchColumn();
@@ -61,10 +75,6 @@ $totalPages = ceil($totalFilms / $limit);
     <link rel="icon" type="image/x-icon" href="icons/pyramida.webp">
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body>
 <?php include "layout/nav.php" ?>
@@ -74,19 +84,33 @@ $totalPages = ceil($totalFilms / $limit);
 </header>
 
 <div class="container">
-    <!-- Filtr podle žánru -->
-    <form method="GET" class="mb-4">
-        <label for="genre">Filtr podle žánru:</label>
-        <select name="genre" id="genre" class="form-select w-auto d-inline-block">
-            <option value="">Všechny žánry</option>
-            <?php foreach ($genres as $genre): ?>
-                <option value="<?= $genre['id'] ?>" <?= $selectedGenre == $genre['id'] ? 'selected' : '' ?>>
-                    <?= htmlspecialchars($genre['name']) ?>
-                </option>
-            <?php endforeach; ?>
-        </select>
-        <button type="submit" class="btn btn-primary">Filtrovat</button>
-    </form>
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" action="">
+                <div class="row align-items-end">
+                    <div class="col-md-5">
+                        <label for="search" class="form-label">Hledat podle názvu</label>
+                        <input type="text" class="form-control" id="search" name="search" value="<?= htmlspecialchars($searchTerm) ?>" placeholder="Zadejte název filmu">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="genre" class="form-label">Filtrovat podle žánru</label>
+                        <select class="form-select" id="genre" name="genre">
+                            <option value="0">Všechny žánry</option>
+                            <?php foreach ($genres as $genre): ?>
+                                <option value="<?= $genre['id'] ?>" <?= ($selectedGenre == $genre['id']) ? 'selected' : '' ?>>
+                                    <?= htmlspecialchars($genre['name']) ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <button type="submit" class="btn btn-primary w-100">Hledat</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
 
     <!-- Seznam filmů -->
     <div class="row">
@@ -99,7 +123,7 @@ $totalPages = ceil($totalFilms / $limit);
                         <p class="card-text"><?= htmlspecialchars($film['description']) ?></p>
                         <p><strong>Žánr:</strong> <?= htmlspecialchars($film['genre_name']) ?></p>
                         <p><strong>Hodnocení:</strong> <?= number_format($film['average_rating'], 1) ?> ★</p>
-                        <a href="screening_of_film.php?film_id=<?= number_format($film['film_id']) ?>" class="btn btn-primary">Zobrazit promítání</a>
+                        <a href="screening_of_film.php?film_id=<?= $film['film_id'] ?>" class="btn btn-primary">Zobrazit promítání</a>
                     </div>
                 </div>
             </div>
@@ -109,11 +133,35 @@ $totalPages = ceil($totalFilms / $limit);
     <!-- Stránkování -->
     <div>
         <ul class="pagination justify-content-center">
-            <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-                <li class="page-item <?= $i == $page ? 'active' : '' ?>">
-                    <a class="page-link" href="?page=<?= $i ?>&genre=<?= $selectedGenre ?>"><?= $i ?></a>
-                </li>
-            <?php endfor; ?>
+            <?php
+            if ($totalPages > 1) {
+                $range = 3;
+                $showDotsBefore = $page > ($range + 2);
+                $showDotsAfter = $page < ($totalPages - ($range + 1));
+
+                echo '<li class="page-item ' . ($page == 1 ? 'active' : '') . '">
+                    <a class="page-link" href="?page=1' . (!empty($searchTerm) ? '&search=' . urlencode($searchTerm) : '') . ($selectedGenre ? '&genre=' . $selectedGenre : '') . '">1</a>
+                  </li>';
+
+                if ($showDotsBefore) {
+                    echo '<li class="page-item disabled"><span class="page-link">…</span></li>';
+                }
+
+                for ($i = max(2, $page - $range); $i <= min($totalPages - 1, $page + $range); $i++) {
+                    echo '<li class="page-item ' . ($i == $page ? 'active' : '') . '">
+                        <a class="page-link" href="?page=' . $i . (!empty($searchTerm) ? '&search=' . urlencode($searchTerm) : '') . ($selectedGenre ? '&genre=' . $selectedGenre : '') . '">' . $i . '</a>
+                      </li>';
+                }
+
+                if ($showDotsAfter) {
+                    echo '<li class="page-item disabled"><span class="page-link">…</span></li>';
+                }
+
+                echo '<li class="page-item ' . ($page == $totalPages ? 'active' : '') . '">
+                    <a class="page-link" href="?page=' . $totalPages . (!empty($searchTerm) ? '&search=' . urlencode($searchTerm) : '') . ($selectedGenre ? '&genre=' . $selectedGenre : '') . '">' . $totalPages . '</a>
+                  </li>';
+            }
+            ?>
         </ul>
     </div>
 </div>

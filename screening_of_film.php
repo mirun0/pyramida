@@ -48,7 +48,7 @@ $screenings = $stmt->fetchAll();
         <div class="col-md-8">
             <h1><?= htmlspecialchars($film['film_name']) ?></h1>
             <p><strong>Žánr:</strong> <?= htmlspecialchars($film['genre_name']) ?></p>
-            <p><strong>Hodnocení:</strong> <?= number_format($film['average_rating'], 1) ?> ★</p>
+            <p><strong>Hodnocení:</strong> <?= number_format($film['average_rating'], 1) ?> ⭐</p>
             <p><?= nl2br(htmlspecialchars($film['description'])) ?></p>
         </div>
     </div>
