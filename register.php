@@ -72,7 +72,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $email = $_POST['email'];
     $password = $_POST['password'];
     $password_confirm = $_POST['password_confirm'];
-    $role = 2;
+    $role = 3;
 
     $sql = "SELECT COUNT(*) FROM user WHERE email = ?";
     $stmt = $conn->prepare($sql);

@@ -10,8 +10,7 @@ if (isset($_SESSION['accountId'])) {
     $stmt->execute([$userId]);
     $userRole = $stmt->fetch();
 }
-
-if ($userRole['FK_role'] == 3 || !isset($_SESSION['accountId'])) {
+if ($userRole === null || $userRole['FK_role'] > 2) {
     header("Location: index.php");
     exit();
 }

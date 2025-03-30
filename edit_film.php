@@ -44,7 +44,7 @@ if (isset($_POST['update'])) {
             echo "<p style='color: red;'>$error</p>";
         }
     } else {
-        $filmId = (int)$_GET['film_id'];
+        $filmId = (int)$_GET['id'];
         $uploadDir = 'img/';
         $fileName = basename($_FILES['image']['name']);
         $targetFilePath = $uploadDir . $fileName;
@@ -81,24 +81,22 @@ if (isset($_POST['update'])) {
 <body>
 <?php 
     include "layout/nav.php";
-
     session_start();
-    if (!isset($_SESSION['loggedAccount'])) {
-        header("Location: login.php");
-        exit;
+
+    if (isset($_SESSION['accountId'])) {
+        $userId = $_SESSION['accountId'];
+    
+        $sql = "SELECT FK_role from user where id = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->execute([$userId]);
+        $userRole = $stmt->fetch();
     }
-    
-    $sql = "SELECT FK_role from user where id = ?";
-    $stmt = $conn->prepare($sql);
-    $stmt->execute([$_SESSION['accountId']]);
-    $userRole = $stmt->fetch();
-    
-    if ($userRole['FK_role'] > 1) {
+    if ($userRole === null || $userRole['FK_role'] > 2) {
         header("Location: index.php");
-        exit;
+        exit();
     }
 
-    $filmId = (int)$_GET['film_id'];
+    $filmId = (int)$_GET['id'];
     $sql = "SELECT name, length, releaseDate, description, image, FK_genre AS genre FROM film WHERE id = ?";
     $stmt = $conn->prepare($sql);
     $stmt->execute([$filmId]);

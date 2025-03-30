@@ -2,19 +2,17 @@
 include 'db/db_connect.php';
 session_start();
 
-if (!isset($_SESSION['loggedAccount'])) {
-    header("Location: login.php");
-    exit;
+if (isset($_SESSION['accountId'])) {
+    $userId = $_SESSION['accountId'];
+
+    $sql = "SELECT FK_role from user where id = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->execute([$userId]);
+    $userRole = $stmt->fetch();
 }
-
-$sql = "SELECT FK_role from user where id = ?";
-$stmt = $conn->prepare($sql);
-$stmt->execute([$_SESSION['accountId']]);
-$userRole = $stmt->fetch();
-
-if ($userRole['FK_role'] > 1) {
+if ($userRole === null || $userRole['FK_role'] > 2) {
     header("Location: index.php");
-    exit;
+    exit();
 }
 
 if (isset($_POST['add'])) {
