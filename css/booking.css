@@ -1,0 +1,74 @@
+.seat-grid {
+    display: grid;
+    gap: 3px;
+    margin: 20px;
+    width: 100%;
+    padding: 10px;
+    padding-top: 20px;
+    margin: auto;
+}
+
+.box {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    font-size: 1em;
+}
+
+.seat {
+    background-color: green;
+    color: white;
+    cursor: pointer;
+}
+
+.disabled-seat {
+    background-color: gray;
+    color: white;
+    cursor: not-allowed;
+}
+
+.selected-seat {
+    background-color: orange;
+    color: white;
+    cursor: pointer;
+}
+
+.seat:active {
+    background-color: darkgreen;
+}
+
+.aisle {
+    background-color: black;
+    color: white;
+}
+
+.text-center {
+    justify-content: center;
+    width: fit-content;
+    margin: auto;
+    padding-top: 20px;
+}
+
+#main-container {
+    width: 50%;
+}
+
+@media (max-width: 990px) {
+
+    .box {
+        font-size: 1.5em;
+    }
+
+    #main-container {
+        width: 100%;
+    }
+}
+
+@media (max-width: 700px) {
+    .box {
+        font-size: 2em;
+    }
+}

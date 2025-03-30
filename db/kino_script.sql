@@ -77,6 +77,7 @@ CREATE TABLE IF NOT EXISTS film_has_subtitles (
 CREATE TABLE IF NOT EXISTS film_screening (
 	id INT UNSIGNED NOT NULL AUTO_INCREMENT,
 	dateTime DATETIME NOT NULL,
+    price decimal not null,
 	FK_hall INT UNSIGNED REFERENCES hall(id),
 	FK_film INT UNSIGNED REFERENCES film(id),
 	FK_film_has_dubbing INT UNSIGNED REFERENCES film_has_dubbing(id),
@@ -86,6 +87,7 @@ CREATE TABLE IF NOT EXISTS film_screening (
 
 CREATE TABLE IF NOT EXISTS booking (
 	id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    price decimal not null,
 	FK_user INT UNSIGNED REFERENCES user(id),
 	FK_screening INT UNSIGNED REFERENCES film_screening(id),
 	PRIMARY KEY (id)
@@ -281,68 +283,68 @@ INSERT INTO film_has_subtitles(FK_film, FK_language) VALUES
     (19, 1), -- Schindlerův seznam (Titulky v češtině)
     (19, 2); -- Schindlerův seznam (Titulky v angličtině)
 
-INSERT INTO film_screening(dateTime, FK_hall, FK_film, FK_film_has_dubbing, FK_film_has_subtitles) VALUES 
+INSERT INTO film_screening(dateTime, price, FK_hall, FK_film, FK_film_has_dubbing, FK_film_has_subtitles) VALUES 
     -- Avengers Endgame (sál 1)
-    ('2025-05-16 14:00:00', 1, 1, 1, 1),
-    ('2025-05-17 18:00:00', 1, 1, 2, NULL),
-    ('2025-05-18 20:00:00', 2, 1, 1, 2),
+    ('2025-05-16 14:00:00', 200, 1, 1, 1, 1),
+    ('2025-05-17 18:00:00', 200, 1, 1, 2, NULL),
+    ('2025-05-18 20:00:00', 200, 2, 1, 1, 2),
     -- Interstellar (sál 2)
-    ('2025-05-16 17:00:00', 2, 2, 2, 1),
-    ('2025-05-18 21:00:00', 3, 2, 2, NULL),
-    ('2025-05-19 15:00:00', 1, 2, 1, 2),
+    ('2025-05-16 17:00:00', 200, 2, 2, 2, 1),
+    ('2025-05-18 21:00:00', 200, 3, 2, 2, NULL),
+    ('2025-05-19 15:00:00', 200, 1, 2, 1, 2),
     -- Paranormal Activity (sál 3)
-    ('2025-05-16 20:00:00', 3, 3, 3, NULL),
-    ('2025-05-17 22:00:00', 1, 3, 3, 1),
+    ('2025-05-16 20:00:00', 200, 3, 3, 3, NULL),
+    ('2025-05-17 22:00:00', 200, 1, 3, 3, 1),
     -- Pán prstenů (sál 4)
-    ('2025-05-16 15:30:00', 4, 4, 4, 2),
-    ('2025-05-18 19:00:00', 2, 4, 4, NULL),
-    ('2025-05-19 17:30:00', 3, 4, 5, 1),
+    ('2025-05-16 15:30:00', 200, 4, 4, 4, 2),
+    ('2025-05-18 19:00:00', 200, 2, 4, 4, NULL),
+    ('2025-05-19 17:30:00', 200, 3, 4, 5, 1),
     -- Titanic (sál 2)
-    ('2025-05-16 19:00:00', 2, 5, 5, 1),
-    ('2025-05-17 21:30:00', 3, 5, 6, NULL),
-    ('2025-05-19 14:00:00', 1, 5, 5, 2),
+    ('2025-05-16 19:00:00', 200, 2, 5, 5, 1),
+    ('2025-05-17 21:30:00', 200, 3, 5, 6, NULL),
+    ('2025-05-19 14:00:00', 200, 1, 5, 5, 2),
     -- Shrek (sál 1)
-    ('2025-05-16 21:30:00', 1, 6, 6, NULL),
-    ('2025-05-18 16:00:00', 2, 6, 6, 1),
+    ('2025-05-16 21:30:00', 200, 1, 6, 6, NULL),
+    ('2025-05-18 16:00:00', 200, 2, 6, 6, 1),
     -- Joker (sál 3)
-    ('2025-05-16 16:00:00', 3, 7, 7, 1),
-    ('2025-05-18 22:00:00', 4, 7, 7, NULL),
+    ('2025-05-16 16:00:00', 200, 3, 7, 7, 1),
+    ('2025-05-18 22:00:00', 200, 4, 7, 7, NULL),
     -- Forrest Gump (sál 4)
-    ('2025-05-16 19:30:00', 4, 8, 8, NULL),
-    ('2025-05-17 15:30:00', 3, 8, 8, 1),
+    ('2025-05-16 19:30:00', 200, 4, 8, 8, NULL),
+    ('2025-05-17 15:30:00', 200, 3, 8, 8, 1),
     -- Gladiátor (sál 2)
-    ('2025-05-16 22:00:00', 2, 9, 9, 2),
-    ('2025-05-18 18:30:00', 1, 9, 9, NULL),
+    ('2025-05-16 22:00:00', 200, 2, 9, 9, 2),
+    ('2025-05-18 18:30:00', 200, 1, 9, 9, NULL),
     -- Mad Max (sál 4)
-    ('2025-05-17 17:30:00', 4, 10, 10, 1),
-    ('2025-05-19 20:30:00', 2, 10, 10, 2),
+    ('2025-05-17 17:30:00', 200, 4, 10, 10, 1),
+    ('2025-05-19 20:30:00', 200, 2, 10, 10, 2),
     -- Indiana Jones (sál 3)
-    ('2025-05-17 21:00:00', 3, 11, 11, NULL),
-    ('2025-05-18 17:00:00', 4, 11, 11, 1);
+    ('2025-05-17 21:00:00', 200, 3, 11, 11, NULL),
+    ('2025-05-18 17:00:00', 200, 4, 11, 11, 1);
     
-INSERT INTO booking(FK_user, FK_screening) VALUES
+INSERT INTO booking(FK_user, price, FK_screening) VALUES
     -- Avengers Endgame
-    (5, 1), (12, 1), (33, 1), (21, 1), (45, 2), (9, 2), (27, 2), (11, 3), (39, 3), 
+    (5, 500, 1), (12, 500, 1), (33, 500, 1), (21, 500, 1), (45, 500, 2), (9, 500, 2), (27, 500, 2), (11, 500, 3), (39, 500, 3), 
     -- Interstellar
-    (14, 4), (8, 4), (3, 4), (50, 5), (19, 5), (31, 6), (6, 6), 
+    (14, 500, 4), (8, 500, 4), (3, 500, 4), (50, 500, 5), (19, 500, 5), (31, 500, 6), (6, 500, 6), 
     -- Paranormal Activity
-    (1, 7), (42, 7), (37, 7), (29, 8), (40, 8), (17, 8),
+    (1, 500, 7), (42, 500, 7), (37, 500, 7), (29, 500, 8), (40, 500, 8), (17, 500, 8),
     -- Pán prstenů
-    (22, 9), (30, 9), (44, 9), (2, 10), (41, 10), (16, 11),
+    (22, 500, 9), (30, 500, 9), (44, 500, 9), (2, 500, 10), (41, 500, 10), (16, 500, 11),
     -- Titanic
-    (13, 12), (32, 12), (23, 12), (7, 13), (28, 13), (35, 14),
+    (13, 500, 12), (32, 500, 12), (23, 500, 12), (7, 500, 13), (28, 500, 13), (35, 500, 14),
     -- Shrek
-    (26, 15), (18, 15), (46, 15), (10, 16), (38, 16),
+    (26, 500, 15), (18, 500, 15), (46, 500, 15), (10, 500, 16), (38, 500, 16),
     -- Joker
-    (47, 17), (4, 17), (15, 18),
+    (47, 500, 17), (4, 500, 17), (15, 500, 18),
     -- Forrest Gump
-    (24, 19), (48, 19), (25, 19), (20, 20), (36, 20),
+    (24, 500, 19), (48, 500, 19), (25, 500, 19), (20, 500, 20), (36, 500, 20),
     -- Gladiátor
-    (50, 21), (34, 21), (5, 22),
+    (50, 500, 21), (34, 500, 21), (5, 500, 22),
     -- Mad Max
-    (49, 23), (9, 23), (43, 24),
+    (49, 500, 23), (9, 500, 23), (43, 500, 24),
     -- Indiana Jones
-    (11, 25), (33, 25), (31, 26);
+    (11, 500, 25), (33, 500, 25), (31, 500, 26);
 
 INSERT INTO booking_has_seat(FK_booking, FK_seat) VALUES 
     -- Každá rezervace dostane 1–4 sedadla
@@ -824,7 +826,9 @@ create procedure get_ticket_information(in_screening_id int)
 begin
 	select 
 		film.name as name,
+        film.image as image,
 		film_screening.dateTime as datetime,
+        film_screening.price as price,
         film_screening.FK_hall as hall_id,
         get_available_seats_count(in_screening_id) as available_seats
     from film_screening
@@ -834,7 +838,7 @@ end //
 
 delimiter ;
 
-call get_ticket_information(20);
+call get_ticket_information(17);
 
 
 delimiter //
@@ -854,5 +858,5 @@ end //
 
 delimiter ;
 
-call get_seat_information(20);
+call get_seat_information(17);
 
