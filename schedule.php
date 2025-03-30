@@ -1,5 +1,6 @@
 <?php
 include 'db/db_connect.php';
+session_start();
 
 // Získání všech dostupných žánrů pro filtr
 $sql = "SELECT id, name FROM genre";

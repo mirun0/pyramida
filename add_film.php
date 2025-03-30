@@ -1,5 +1,21 @@
 <?php 
 include 'db/db_connect.php';
+session_start();
+
+if (!isset($_SESSION['loggedAccount'])) {
+    header("Location: login.php");
+    exit;
+}
+
+$sql = "SELECT FK_role from user where id = ?";
+$stmt = $conn->prepare($sql);
+$stmt->execute([$_SESSION['accountId']]);
+$userRole = $stmt->fetch();
+
+if ($userRole['FK_role'] > 1) {
+    header("Location: index.php");
+    exit;
+}
 
 if (isset($_POST['add'])) {
     $name = $_POST['name'];
@@ -70,12 +86,6 @@ if (isset($_POST['add'])) {
 </head>
 <body>
 <?php include "layout/nav.php"?>
-<?php
-if (!isset($_SESSION['loggedAccount']) || $_SESSION['accountId'] !== 1 && $_SESSION['accountId'] !== 2) {
-    header("Location: login.php");
-    exit;
-}
-?>
 
 <div class="container mt-4">
     <h2></h2>

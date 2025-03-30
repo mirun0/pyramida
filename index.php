@@ -1,5 +1,6 @@
 <?php
 include 'db/db_connect.php';
+session_start();
 
 $sql = "SELECT * FROM latest_films limit 6";
 $stmt = $conn->prepare($sql);

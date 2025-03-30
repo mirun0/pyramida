@@ -118,8 +118,8 @@ INSERT INTO role(name) VALUES
 	('admin'), ('film_manager'), ('user');
 
 INSERT INTO user(firstName, lastName, email, password, FK_role) VALUES 
-	('Jan', 'Novák', 'admin', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 1),
-    ('Petr', 'Svoboda', 'film_manager', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 2),
+	('Jan', 'Novák', 'admin@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 1),
+    ('Petr', 'Svoboda', 'film_manager@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 2),
     ('Eva', 'Dvořáková', 'eva.dvorakova@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 3),
     ('Lucie', 'Černá', 'lucie.cerna@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 3),
     ('Karel', 'Procházka', 'karel.prochazka@example.com', "$2y$10$8hOPtQ8wXNXEqqQddgEyF.1GwMQpv6tN63FTI6MEdg52OoizK2MeO", 3),

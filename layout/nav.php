@@ -1,5 +1,4 @@
 <?php
-session_start();
 if (isset($_SESSION['accountId'])) {
     $userId = $_SESSION['accountId'];
     $sql = "SELECT get_user_full_name(?) as full_name";

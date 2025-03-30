@@ -1,5 +1,6 @@
 <?php
 include 'db/db_connect.php';
+session_start();
 
 $filmId = $_GET['film_id'] ?? 0;
 
@@ -73,7 +74,7 @@ $screenings = $stmt->fetchAll();
                 <td><?= htmlspecialchars($screening['subtitles_language']) ?></td>
                 <td><?= htmlspecialchars($screening['available_seats']) ?> / <?= htmlspecialchars($screening['total_seats']) ?></td>
                 <td>
-                    <a href="reservation_ticket.php?screening_id=<?= $screening['screening_id'] ?>" class="btn btn-primary">Rezervovat</a>
+                    <a href="reservation_tickets.php?screening_id=<?= $screening['screening_id'] ?>" class="btn btn-primary">Rezervovat</a>
                 </td>
             </tr>
         <?php endforeach; ?>
