@@ -1,4 +1,4 @@
-<?php 
+<?php
 include 'db/db_connect.php';
 
 if (isset($_POST['update'])) {
@@ -7,7 +7,7 @@ if (isset($_POST['update'])) {
     $releaseDate = $_POST['releaseDate'];
     $description = $_POST['description'];
     $genre = $_POST['genre'];
-        
+
     if (empty($name)) {
         $errors[] = "Název filmu je povinný.";
     }
@@ -15,25 +15,22 @@ if (isset($_POST['update'])) {
         $errors[] = "Délka filmu musí být kladné číslo.";
     }
     if (empty($releaseDate) || !preg_match('/^\d{4}-\d{2}-\d{2}$/', $releaseDate)) {
-        $errors[] = "Datum vydání není platné." . $releaseDate;
+        $errors[] = "Datum vydání není platné.";
     }
     if (empty($description)) {
-        $errors[] = "Popis filmu je povinný.";
-    }
-    if (empty($_POST['description'])) {
         $errors[] = "Popis filmu je povinný.";
     }
     if (empty($genre) || !filter_var($genre, FILTER_VALIDATE_INT)) {
         $errors[] = "Vyberte platný žánr.";
     } else {
-        $stmt = $conn->query("SELECT * FROM genre");
-        $stmt->execute();
+        $stmt = $conn->query("SELECT * FROM genre WHERE id = $genre");
         if ($stmt->fetch() === null) $errors[] = "Vyberte platný žánr.";
     }
-    if (!isset($_FILES['image']) || $_FILES['image']['error'] != 0) {
-        $errors[] = "Obrázek je povinný.";
-    } else {
-        $allowedTypes = ['image/jpeg'];
+
+    $filmId = (int)$_GET['id'];
+
+    if (!empty($_FILES['image']['name'])) {
+        $allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
         if (!in_array($_FILES['image']['type'], $allowedTypes)) {
             $errors[] = "Obrázek musí být ve formátu JPG, PNG, GIF nebo WEBP.";
         }
@@ -44,20 +41,27 @@ if (isset($_POST['update'])) {
             echo "<p style='color: red;'>$error</p>";
         }
     } else {
-        $filmId = (int)$_GET['id'];
         $uploadDir = 'img/';
-        $fileName = basename($_FILES['image']['name']);
-        $targetFilePath = $uploadDir . $fileName;
-        if (move_uploaded_file($_FILES['image']['tmp_name'], $targetFilePath)) {
+
+        if (!empty($_FILES['image']['name'])) {
             $fileName = basename($_FILES['image']['name']);
-            $sql = "UPDATE film SET name = ?, length = ?, releaseDate = ?, description = ?, image = ?, FK_genre = ? WHERE id = ?";
-            $stmt = $conn->prepare($sql);
-            $stmt->execute([$name, $length, $releaseDate, $description, $fileName, $genre, $filmId]);
-            header("Location: film_administration.php");
-            exit();
+            $targetFilePath = $uploadDir . $fileName;
+
+            if (move_uploaded_file($_FILES['image']['tmp_name'], $targetFilePath)) {
+                $sql = "UPDATE film SET name = ?, length = ?, releaseDate = ?, description = ?, image = ?, FK_genre = ? WHERE id = ?";
+                $stmt = $conn->prepare($sql);
+                $stmt->execute([$name, $length, $releaseDate, $description, $fileName, $genre, $filmId]);
+            } else {
+                echo "<p style='color: red;'>Nepodařilo se nahrát obrázek.</p>";
+            }
         } else {
-            echo "<p style='color: red;'>Nepodařilo se přesunout obrázek</p>";
+            $sql = "UPDATE film SET name = ?, length = ?, releaseDate = ?, description = ?, FK_genre = ? WHERE id = ?";
+            $stmt = $conn->prepare($sql);
+            $stmt->execute([$name, $length, $releaseDate, $description, $genre, $filmId]);
         }
+
+        header("Location: film_administration.php");
+        exit();
     }
 }
 ?>
@@ -79,13 +83,13 @@ if (isset($_POST['update'])) {
     <script src="https://cdn.jsdelivr.net/npm/@splidejs/splide/dist/js/splide.min.js"></script>
 </head>
 <body>
-<?php 
+<?php
     include "layout/nav.php";
     session_start();
 
     if (isset($_SESSION['accountId'])) {
         $userId = $_SESSION['accountId'];
-    
+
         $sql = "SELECT FK_role from user where id = ?";
         $stmt = $conn->prepare($sql);
         $stmt->execute([$userId]);
@@ -108,11 +112,11 @@ if (isset($_POST['update'])) {
 ?>
 
 <div class="container mt-4">
-    <h2></h2>
+    <h2>Upravit film</h2>
     <form method="post" enctype="multipart/form-data">
         <div class="mb-3">
             <label class="form-label">Název filmu</label>
-            <input type="text" name="name" class="form-control" value="<?= $film['name'] ?>" required>
+            <input type="text" name="name" class="form-control" value="<?= htmlspecialchars($film['name']) ?>" required>
         </div>
         <div class="mb-3">
             <label class="form-label">Délka (minuty)</label>
@@ -124,21 +128,25 @@ if (isset($_POST['update'])) {
         </div>
         <div class="mb-3">
             <label class="form-label">Popis</label>
-            <textarea name="description" class="form-control" required><?= $film['description'] ?></textarea>
+            <textarea name="description" class="form-control" required><?= htmlspecialchars($film['description']) ?></textarea>
         </div>
         <div class="mb-3">
             <label class="form-label">Obrázek</label>
-            <input type="file" name="image" class="form-control" accept="image/*" required>
+            <div>
+                <?php if (!empty($film['image'])): ?>
+                    <img src="img/<?= htmlspecialchars($film['image']) ?>" alt="Náhled obrázku" style="max-height: 150px; display: block; margin-bottom: 10px;">
+                <?php endif; ?>
+                <input type="file" name="image" class="form-control" accept="image/*">
+            </div>
         </div>
         <div class="mb-3">
             <label class="form-label">Žánr</label>
             <select name="genre" class="form-control">
                 <?php
-                    $genres = $conn->query("SELECT * FROM genre");
-                    $genres->execute();
-                    while ($row = $genres->fetch(PDO::FETCH_ASSOC)) {
-                        echo "<option value='{$row['id']}'" . ($row['id'] === $film['genre'] ? " selected" : "") . ">{$row['name']}</option>";
-                    }
+                $genres = $conn->query("SELECT * FROM genre");
+                while ($row = $genres->fetch(PDO::FETCH_ASSOC)) {
+                    echo "<option value='{$row['id']}'" . ($row['id'] == $film['genre'] ? " selected" : "") . ">{$row['name']}</option>";
+                }
                 ?>
             </select>
         </div>

@@ -43,7 +43,6 @@ $topRatedFilms = $stmt->fetchAll();
         <h2>Nejnovější filmy</h2>
         <div class="splide__track">
             <ul class="splide__list">
-                <!-- Dynamicky generované snímky -->
                 <?php foreach ($newestFilms as $film): ?>
                     <li class="splide__slide">
                         <div class="film-card">
@@ -57,7 +56,6 @@ $topRatedFilms = $stmt->fetchAll();
                 <?php endforeach; ?>
             </ul>
         </div>
-        <!-- Navigační tlačítka -->
         <div class="splide__arrows">
             <button class="splide__arrow splide__arrow--prev">‹</button>
             <button class="splide__arrow splide__arrow--next">›</button>
@@ -69,7 +67,6 @@ $topRatedFilms = $stmt->fetchAll();
         <h2>Nejlépe hodnocené filmy</h2>
         <div class="splide__track">
             <ul class="splide__list">
-                <!-- Dynamicky generované snímky -->
                 <?php foreach ($topRatedFilms as $film): ?>
                     <li class="splide__slide">
                         <div class="film-card">
@@ -83,7 +80,6 @@ $topRatedFilms = $stmt->fetchAll();
                 <?php endforeach; ?>
             </ul>
         </div>
-        <!-- Navigační tlačítka -->
         <div class="splide__arrows">
             <button class="splide__arrow splide__arrow--prev">‹</button>
             <button class="splide__arrow splide__arrow--next">›</button>
@@ -102,7 +98,7 @@ $topRatedFilms = $stmt->fetchAll();
         gap: '1rem',
         pagination: false,
         arrows: true,
-        fixedWidth: '300px', /* Pevná šířka pro každý slide */
+        fixedWidth: '300px',
         breakpoints: {
             992: {
                 fixedWidth: '250px',
@@ -124,7 +120,7 @@ $topRatedFilms = $stmt->fetchAll();
         gap: '1rem',
         pagination: false,
         arrows: true,
-        fixedWidth: '300px', /* Pevná šířka pro každý slide */
+        fixedWidth: '300px',
         breakpoints: {
             992: {
                 fixedWidth: '250px',

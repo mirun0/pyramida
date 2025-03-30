@@ -111,8 +111,6 @@ $totalPages = ceil($totalFilms / $limit);
         </div>
     </div>
 
-
-    <!-- Seznam filmů -->
     <div class="row">
         <?php foreach ($films as $film): ?>
             <div class="col-md-4 mb-4">
@@ -130,7 +128,6 @@ $totalPages = ceil($totalFilms / $limit);
         <?php endforeach; ?>
     </div>
 
-    <!-- Stránkování -->
     <div>
         <ul class="pagination justify-content-center">
             <?php
