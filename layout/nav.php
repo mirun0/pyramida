@@ -22,7 +22,7 @@ if (isset($_SESSION['accountId'])) {
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
             <span class="navbar-toggler-icon"></span>
         </button>
-        <div class="collapse navbar-collapse justify-content-lg-end text-center" id="navbarNav">
+        <div class="collapse navbar-collapse justify-content-lg-end text-center pt-0" id="navbarNav">
             <ul class="navbar-nav">
                 <li class="nav-item"><a class="nav-link" href="schedule.php">Filmy</a></li>
                 <li class="nav-item"><a class="nav-link" href="#">Kontakty</a></li>

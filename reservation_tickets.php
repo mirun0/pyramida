@@ -362,6 +362,7 @@ $reserved_seats_ids = array_column($reserved_seats, 'id');
                     document.getElementById("recap-price-form").value = (parseInt(input1.value) * <?= $info["price"] ?>) + 
                     (parseInt(input2.value) * <?= $info["price"]*0.75 ?>);
                     document.getElementById("recap-seats-form").value = seatsStr.slice(0, -1);
+
                     submit = true;
                 }
 
@@ -373,6 +374,12 @@ $reserved_seats_ids = array_column($reserved_seats, 'id');
                 }
             });
 
+});
+
+window.addEventListener("pageshow", function(event) {
+    if (event.persisted) {
+        location.reload();
+    }
 });
 </script>
 

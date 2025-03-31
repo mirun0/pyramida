@@ -574,7 +574,9 @@ DELIMITER //
 CREATE PROCEDURE reserve_seats(
     p_user_id INT UNSIGNED,
     p_screening_id INT UNSIGNED,
-    p_seat_list TEXT
+    p_price INT UNSIGNED,
+    p_seat_list TEXT,
+    out return_id int
 )
 BEGIN
     DECLARE v_booking_id INT UNSIGNED;
@@ -584,16 +586,9 @@ BEGIN
     DECLARE v_seat VARCHAR(10);
     DECLARE v_seat_exists INT;
     
-    DECLARE EXIT HANDLER FOR SQLEXCEPTION 
-    BEGIN
-        ROLLBACK;
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Transaction rolled back due to an error';
-    END;
-    
-    START TRANSACTION;
-    
-    INSERT INTO booking (FK_user, FK_screening) VALUES (p_user_id, p_screening_id);
+    INSERT INTO booking (FK_user, FK_screening, price) VALUES (p_user_id, p_screening_id, p_price);
     SET v_booking_id = LAST_INSERT_ID();
+    set return_id = v_booking_id;
     
     seat_loop: LOOP
         SET v_next_comma = LOCATE(',', p_seat_list, v_position);
@@ -619,16 +614,17 @@ BEGIN
         
         SET v_position = v_next_comma + 1;
     END LOOP;
-    COMMIT;
-    
+
 END //
 DELIMITER ;
 
 -- uživatel s id 1, na promítání 1 rezervuje (1,3,5,30) sedadla
-CALL reserve_seats(1, 1, '1,3,5,30');
+CALL reserve_seats(1, 1, 300, '1,3,5,30,29', @booking_id);
+select @booking_id;
 
 SELECT 
     booking.id AS booking_id,
+    booking.price as price,
     booking.FK_user AS user_id,
     booking.FK_screening AS screening_id,
     booking_has_seat.FK_seat AS seat_id
@@ -666,7 +662,7 @@ END //
 
 DELIMITER ;
 
-CALL upcoming_screenings_for_film(1);
+-- CALL upcoming_screenings_for_film(1);
 
 -- Funkce 1 - získání hodnocení v jsonu
 DELIMITER //
@@ -750,7 +746,7 @@ END //
 
 DELIMITER ;
 
-delete from booking where id = 57;
+-- delete from booking where id = 57;
 -- select * from booking_has_seat where FK_booking = 57;
 
 
@@ -838,7 +834,7 @@ end //
 
 delimiter ;
 
-call get_ticket_information(17);
+-- call get_ticket_information(17);
 
 
 delimiter //
@@ -858,5 +854,38 @@ end //
 
 delimiter ;
 
-call get_seat_information(17);
+-- call get_seat_information(17);
+
+drop procedure get_booking_information;
+delimiter //
+create procedure get_booking_information(in_booking_id int)
+begin
+	SELECT 
+		booking.price as price,
+		film_screening.datetime as datetime,
+        film_screening.FK_hall as hall_id,
+        film.name as name,
+        CASE 
+            WHEN film_has_dubbing.id IS NOT NULL THEN l1.language 
+            ELSE NULL
+        END AS dubbing,
+        CASE 
+            WHEN film_has_subtitles.id IS NOT NULL THEN l2.language 
+            ELSE NULL 
+        END AS subtitles
+    FROM booking
+    join film_screening on booking.FK_screening = film_screening.id
+    join film on film_screening.FK_film = film.id
+    left join film_has_dubbing on film_has_dubbing.id = film_screening.FK_film_has_dubbing
+    left join language l1 on film_has_dubbing.FK_language = l1.id
+    left join film_has_subtitles on film_has_subtitles.id = film_screening.FK_film_has_subtitles
+    left join language l2 on film_has_subtitles.FK_language = l2.id
+    where booking.id = in_booking_id;
+end //
+delimiter ;
+
+select * from film;
+call get_booking_information(72);
+
+select * from film;
 
