@@ -110,7 +110,10 @@ if (isset($_POST['add'])) {
         </div>
         <div class="mb-3">
             <label class="form-label">Obrázek</label>
-            <input type="file" name="image" class="form-control" accept="image/*" required>
+            <div>
+                <img id="frame" src="" style="max-height: 150px; max-width: 400px; display: block; margin-bottom: 10px;">
+                <input type="file" name="image" class="form-control" accept="image/*" onchange="preview()">
+            </div>
         </div>
         <div class="mb-3">
             <label class="form-label">Žánr</label>
@@ -132,6 +135,11 @@ if (isset($_POST['add'])) {
 <?php include "layout/footer.php" ?>
 
 <script src="js/bootstrap.bundle.min.js"></script>
+<script>
+    function preview() {
+        frame.src = URL.createObjectURL(event.target.files[0]);
+    }
+</script>
 
 </body>
 </html>

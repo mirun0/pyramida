@@ -1,5 +1,29 @@
 <?php
 include 'db/db_connect.php';
+session_start();
+
+if (isset($_SESSION['accountId'])) {
+    $userId = $_SESSION['accountId'];
+
+    $sql = "SELECT FK_role from user where id = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->execute([$userId]);
+    $userRole = $stmt->fetch();
+}
+if ($userRole === null || $userRole['FK_role'] > 2) {
+    header("Location: index.php");
+    exit();
+}
+
+$filmId = (int)$_GET['id'];
+$sql = "SELECT name, length, releaseDate, description, image, FK_genre AS genre FROM film WHERE id = ?";
+$stmt = $conn->prepare($sql);
+$stmt->execute([$filmId]);
+$film = $stmt->fetch();
+if (!isset($film)) {
+    header("Location: login.php");
+    exit;
+}
 
 if (isset($_POST['update'])) {
     $name = $_POST['name'];
@@ -48,6 +72,12 @@ if (isset($_POST['update'])) {
             $targetFilePath = $uploadDir . $fileName;
 
             if (move_uploaded_file($_FILES['image']['tmp_name'], $targetFilePath)) {
+                $filePointer = 'img/' . $film["image"];
+                if (unlink($filePointer)) {
+                    echo ("$filePointer byl odstraněn");
+                } else {
+                    echo ("$filePointer se nepodařilo odstranit.");
+                }
                 $sql = "UPDATE film SET name = ?, length = ?, releaseDate = ?, description = ?, image = ?, FK_genre = ? WHERE id = ?";
                 $stmt = $conn->prepare($sql);
                 $stmt->execute([$name, $length, $releaseDate, $description, $fileName, $genre, $filmId]);
@@ -85,30 +115,6 @@ if (isset($_POST['update'])) {
 <body>
 <?php
     include "layout/nav.php";
-    session_start();
-
-    if (isset($_SESSION['accountId'])) {
-        $userId = $_SESSION['accountId'];
-
-        $sql = "SELECT FK_role from user where id = ?";
-        $stmt = $conn->prepare($sql);
-        $stmt->execute([$userId]);
-        $userRole = $stmt->fetch();
-    }
-    if ($userRole === null || $userRole['FK_role'] > 2) {
-        header("Location: index.php");
-        exit();
-    }
-
-    $filmId = (int)$_GET['id'];
-    $sql = "SELECT name, length, releaseDate, description, image, FK_genre AS genre FROM film WHERE id = ?";
-    $stmt = $conn->prepare($sql);
-    $stmt->execute([$filmId]);
-    $film = $stmt->fetch();
-    if (!isset($film)) {
-        header("Location: login.php");
-        exit;
-    }
 ?>
 
 <div class="container mt-4">
@@ -134,9 +140,9 @@ if (isset($_POST['update'])) {
             <label class="form-label">Obrázek</label>
             <div>
                 <?php if (!empty($film['image'])): ?>
-                    <img src="img/<?= htmlspecialchars($film['image']) ?>" alt="Náhled obrázku" style="max-height: 150px; display: block; margin-bottom: 10px;">
+                    <img id="frame" src="img/<?= htmlspecialchars($film['image']) ?>" alt="Náhled obrázku" style="max-height: 150px; display: block; margin-bottom: 10px;">
                 <?php endif; ?>
-                <input type="file" name="image" class="form-control" accept="image/*">
+                <input type="file" name="image" class="form-control" accept="image/*" onchange="preview()">
             </div>
         </div>
         <div class="mb-3">
@@ -158,6 +164,11 @@ if (isset($_POST['update'])) {
 <?php include "layout/footer.php" ?>
 
 <script src="js/bootstrap.bundle.min.js"></script>
+<script>
+    function preview() {
+        frame.src = URL.createObjectURL(event.target.files[0]);
+    }
+</script>
 
 </body>
 </html>

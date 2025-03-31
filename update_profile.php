@@ -25,6 +25,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $sql = "UPDATE user SET firstName = ?, lastName = ?, email = ? WHERE id = ?";
     $stmt = $conn->prepare($sql);
     $stmt->execute([$firstName, $lastName, $email, $userId]);
+    $_SESSION['accountEmail'] = $email;
+    $_SESSION['accountFirstName'] = $firstName;
+    $_SESSION['accountLastName'] = $lastName;
 
     header("Location: profile.php?success=updated");
     exit;
