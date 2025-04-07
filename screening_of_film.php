@@ -1,6 +1,9 @@
 <?php
 include 'db/db_connect.php';
 session_start();
+if (!isset($_SESSION['loggedAccount'])) {
+    echo "prihlasit";
+}
 
 $filmId = $_GET['film_id'] ?? 0;
 
@@ -80,6 +83,65 @@ $screenings = $stmt->fetchAll();
         <?php endforeach; ?>
         </tbody>
     </table>
+
+    <h2 class="mt-5">Recenze</h2>
+    
+
+
+  <div class="container mt-4">  
+
+  <div class="card mb-4">
+        <div class="card-body">
+        <h5 class="mb-3">Přidat recenzi:</h5>
+        <form action="submit_review.php?screening_id=<?= $_GET["film_id"] ?>" method="POST">
+
+    <div class="mb-3">
+    <span class="text-warning">
+        <strong style="color: white">Hodnocení: </strong>
+            <i class="fa-regular fa-star"></i>
+            <i class="fa-regular fa-star"></i>
+            <i class="fa-regular fa-star"></i>
+            <i class="fa-regular fa-star"></i>
+            <i class="fa-regular fa-star"></i>
+        </span>
+    </div>
+    <input type="hidden" name="stars" id="stars" value="10">
+
+    <div class="mb-3">
+      <textarea class="form-control bg-dark" style="border: none; color:white;" id="comment" name="comment" rows="2" required></textarea>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Odeslat recenzi</button>
+  </form>
+        </div>
+    </div>
+
+
+  <div class="d-flex flex-column gap-3">
+    <!-- Jedna recenze -->
+    <div class="p-3 rounded bg-dark">
+      <div class="d-flex justify-content-between mb-2">
+        <strong>Jan Novák</strong>
+      </div>
+      <div class="mb-2"><small style="color: gray">2025-04-07 15:30</small></div>
+      <div class="mb-2">
+        <!-- Počet hvězd -->
+        <span class="text-warning">
+            <i class="fa-solid fa-star"></i>
+            <i class="fa-solid fa-star"></i>
+            <i class="fa-solid fa-star"></i>
+            <i class="fa-solid fa-star-half-stroke"></i>
+            <i class="fa-regular fa-star"></i>
+            <span style="color: white;">4/5</span>
+        </span>
+      </div>
+      <p>Skvělý produkt, rychlé dodání a vše funguje jak má. Doporučuji!</p>
+    </div>
+
+
+  </div>
+</div>
+
 </div>
 
 <?php include "layout/footer.php" ?>
