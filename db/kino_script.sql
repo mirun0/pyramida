@@ -85,6 +85,7 @@ CREATE TABLE IF NOT EXISTS film_screening (
 	PRIMARY KEY (id)
 ) ENGINE = MyISAM;
 
+SELECT 
 CREATE TABLE IF NOT EXISTS booking (
 	id INT UNSIGNED NOT NULL AUTO_INCREMENT,
     price decimal not null,
@@ -663,7 +664,7 @@ END //
 
 DELIMITER ;
 
--- CALL upcoming_screenings_for_film(1);
+CALL upcoming_screenings_for_film(6);
 
 -- Funkce 1 - získání hodnocení v jsonu
 DELIMITER //
@@ -758,6 +759,8 @@ CREATE TRIGGER after_delete_film
 AFTER DELETE ON film
 FOR EACH ROW
 BEGIN
+	DELETE FROM film_has_dubbing WHERE FK_film = OLD.id;
+    DELETE FROM film_has_subtitles WHERE FK_film = OLD.id;
     DELETE FROM film_screening WHERE FK_film = OLD.id;
 END //
 
@@ -765,9 +768,6 @@ DELIMITER ;
 
 -- DELETE FROM film WHERE id = 1;
 -- SELECT * FROM film_screening WHERE FK_film = 1;
-
-
-
 
 /*
 DELIMITER //
@@ -885,7 +885,6 @@ begin
 end //
 delimiter ;
 
-select * from film;
 call get_booking_information(72);
 
 delimiter //
@@ -925,12 +924,6 @@ call add_review("spica", 5, 3, 7);
 
 SELECT FK_user from review where review.id = 43;
 
-
-
-
-
-
-
 -- Procedura - rezervace konkretniho uzivatele
 DELIMITER //
 
@@ -963,3 +956,28 @@ END //
 DELIMITER ;
 
 call bookings_of_user(5);
+drop procedure validate_screening_time;
+delimiter //
+create procedure validate_screening_time(in_hall_id int, in_screening_id int, in_screening_date date, in_screening_time time)
+begin
+	DECLARE filmLength int;
+    
+    SELECT 
+		film.length INTO filmLength
+    FROM film_screening
+	JOIN film ON film.id = film_screening.FK_film
+	WHERE film_screening.id = in_screening_id;
+
+	SELECT 
+		IF (COUNT(*) = 0, TRUE, FALSE) AS result
+	FROM film_screening
+	JOIN film ON film.id = film_screening.FK_film
+	JOIN hall ON hall.id = film_screening.FK_hall
+	WHERE hall.id = in_hall_id
+	AND DATE_FORMAT(film_screening.dateTime, "%Y-%m-%d") = in_screening_date
+	AND TIME(in_screening_time) < TIME(DATE_ADD(film_screening.dateTime, INTERVAL film.length MINUTE)) 
+	AND TIME(DATE_ADD(TIME(in_screening_time), INTERVAL filmLength MINUTE)) > TIME(film_screening.dateTime);
+end //
+delimiter ;
+
+call validate_screening_time(4, 18, "2025-5-16", "13:28");

@@ -22,8 +22,17 @@ if (!isset($screeningId)) {
     exit;
 }
 
-$sql = "SELECT dateTime, price, FK_hall AS hall, film_screening.FK_film AS filmId, FK_film_has_dubbing AS filmHasDubbing, FK_film_has_subtitles AS filmHasSubtitles FROM film_screening 
-	WHERE film_screening.id = ?";
+$sql = "SELECT 
+            DATE_FORMAT(dateTime, '%Y-%m-%d') AS date,
+            DATE_FORMAT(dateTime, '%H:%i') AS time,
+            price, FK_hall AS hall, 
+            film.id AS filmId,
+            film.length AS filmLength,
+            FK_film_has_dubbing AS filmHasDubbing, 
+            FK_film_has_subtitles AS filmHasSubtitles 
+        FROM film_screening 
+        JOIN film ON film.id = film_screening.FK_film 
+        WHERE film_screening.id = ?";
 $stmt = $conn->prepare($sql);
 $stmt->execute([$screeningId]);
 $screening = $stmt->fetch();
@@ -33,6 +42,7 @@ if (!isset($screening["filmId"])) {
     exit;
 }
 $filmId = $screening["filmId"];
+$filmLength = $screening["filmLength"];
 
 $sql = "SELECT film_has_dubbing.id AS id, language.language AS language FROM film_has_dubbing 
     JOIN film ON film.id = film_has_dubbing.FK_film
@@ -48,47 +58,61 @@ $sql = "SELECT film_has_subtitles.id AS id, language.language AS language FROM f
 $subtitles = $conn->prepare($sql);
 $subtitles->execute([$filmId]);
 
+$sql = "SELECT id FROM hall";
+$halls = $conn->query($sql);
+
 if (isset($_POST['update'])) {
-    $dateTime = $_POST['dateTime'];
-    $price = $_POST['price'];
+    $date = $_POST['date'];
     $hall = $_POST['hall'];
+    $time = $_POST['time'];
+    $price = $_POST['price'];
     $dubbing = $_POST['dubbing'];
     $subtitles = $_POST['subtitles'];
 
-    if (empty($dateTime)) {
-        $errors[] = "Neplatný datum";
-    }
-    if (empty($price) || !filter_var($price, FILTER_VALIDATE_INT)) {
-        $errors[] = "Neplatná cena";
-    }
     if (empty($hall)) {
         $errors[] = "Neplatná cena";
     } else {
         $stmt = $conn->query("SELECT * FROM hall WHERE id = $hall");
         if ($stmt->fetch() === null) $errors[] = "Vyberte platný sál.";
     }
-    if (empty($dubbing)) {
+    if (empty($date) || empty($time)) {
+        $errors[] = "Neplatný datum nebo čas";
+    } else {
+        $sql = "call validate_screening_time(?, ?, ?, ?)";
+        $stmt = $conn->prepare($sql);
+        $stmt->execute([$hall, $screeningId, $date, $time]);
+        $isValidScreeningTime = $stmt->fetch();
+        $stmt->closeCursor();
+        if ($isValidScreeningTime['result'] === FALSE)
+            $errors[] = "Čas se překrývá s jiným promítáním";
+    }
+    if (empty($price) || !filter_var($price, FILTER_VALIDATE_INT)) {
+        $errors[] = "Neplatná cena";
+    }
+    if (empty($dubbing) || !filter_var($dubbing, FILTER_VALIDATE_INT)) {
         $errors[] = "Neplatný dabing";
     } else {
         $stmt = $conn->query("SELECT * FROM film_has_dubbing WHERE FK_film = $filmId AND id = $dubbing");
-        if ($stmt->fetch() === null) $errors[] = "Neexistující dabing";
+        if ($stmt->fetch() == false) $errors[] = "Neexistující dabing";
     }
-    if ((empty($subtitles) || !filter_var($subtitles, FILTER_VALIDATE_INT)) && $subtitles != 0) {
+    if (!filter_var($subtitles, FILTER_VALIDATE_INT)) {
         $errors[] = "Neplatné titulky";
-    } else {
+    } else if ($subtitles != -1) {
         $stmt = $conn->query("SELECT * FROM film_has_subtitles WHERE FK_film = $filmId AND id = $subtitles");
-        if ($stmt->fetch() === null) $errors[] = "Neexistující titulky";
-    }
+        if ($stmt->fetch() == false) $errors[] = "Neexistující titulky";
+    } else $subtitles = null;
 
     if (!empty($errors)) {
         foreach ($errors as $error) {
-            echo "<p style='color: red;'>$error</p>";
+            echo "<script>
+                    alert('$error');
+                </script>";
         }
     } else {
+        $dateTime = $date . " " . $time;
         $sql = "UPDATE film_screening SET dateTime = ?, price = ?, FK_hall = ?, FK_film_has_dubbing = ?, FK_film_has_subtitles = ? WHERE id = ?";
         $stmt = $conn->prepare($sql);
         $stmt->execute([$dateTime, $price, $hall, $dubbing, $subtitles, $screeningId]);
-
         header("Location: manage_screening.php?id=$filmId");
         exit;
     }
@@ -119,19 +143,34 @@ if (isset($_POST['update'])) {
 <div class="container mt-4">
     <h2>Upravit promítání</h2>
     <form method="post">
+        <input type="hidden" id="film_id" value="<?= $filmId ?>">
+        <input type="hidden" id="film_length" value="<?= $filmLength ?>">
+        <input type="hidden" id="screening_id" value="<?= $screeningId ?>">
+        <input type="hidden" id="screening_time" value="<?= $screening["time"] ?>">
         <div class="mb-3">
-            <label class="form-label">Datum a čas</label>
-            <input type="datetime-local" name="dateTime" class="form-control" value="<?= $screening['dateTime'] ?>" required>
-        </div>
-        <div class="mb-3">
-            <label class="form-label">Cena</label>
-            <input type="number" name="price" class="form-control" value="<?= $screening['price'] ?>" required>
+            <label class="form-label">Datum</label>
+            <input type="date" name="date" id="date" class="form-control" value="<?= $screening['date'] ?>" required>
         </div>
         <div class="mb-3">
             <label class="form-label">Sál</label>
-            <select name="hall" class="form-control">
-                <option value="<?= $screening['hall'] ?>"><?= $screening['hall'] ?></option>
+            <select name="hall" id="hall" class="form-control">
+                <?php 
+                    while ($row = $halls->fetch(PDO::FETCH_ASSOC)) {
+                        echo "<option value='{$row['id']}'>{$row['id']}</option>";
+                    }
+                ?>
             </select>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Čas</label>
+            <select name="time" id="time" class="form-control">
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Cena</label>
+            <input type="number" name="price" class="form-control" value="<?= $screening['price'] ?>" required>
         </div>
         <div class="mb-3">
             <label class="form-label">Dabing</label>
@@ -146,7 +185,7 @@ if (isset($_POST['update'])) {
         <div class="mb-3">
             <label class="form-label">Titulky</label>
             <select name="subtitles" class="form-control">
-                <option value="0">Žádné titulky</option>
+                <option value="-1">Žádné titulky</option>
                 <?php 
                     while ($row = $subtitles->fetch(PDO::FETCH_ASSOC)) {
                         echo "<option value='{$row['id']}'" . ($row['id'] == $screening['filmHasSubtitles'] ? " selected" : "") . ">{$row['language']}</option>";
@@ -159,8 +198,11 @@ if (isset($_POST['update'])) {
     </form>
 </div>
 
+<div id="warning" style="display: block; position: fixed; bottom: 10px; left: 10px; background-color: red; color: white; padding: 10px; border-radius: 5px;"></div>
+
 <?php include "layout/footer.php" ?>
 
 <script src="js/bootstrap.bundle.min.js"></script>
+<script src="js/new_edit_screening.js"></script>
 </body>
 </html>
