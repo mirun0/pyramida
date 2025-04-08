@@ -971,7 +971,7 @@ END //
 DELIMITER ;
 
 call bookings_of_user(5);
-drop procedure validate_screening_time;
+-- drop procedure validate_screening_time;
 delimiter //
 create procedure validate_screening_time(in_hall_id int, in_screening_id int, in_screening_date date, in_screening_time time)
 begin

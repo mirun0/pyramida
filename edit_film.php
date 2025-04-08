@@ -114,7 +114,7 @@ if (isset($_POST['update'])) {
 </head>
 <body>
 <?php
-    include "layout/nav.php";
+    include "layout/admin_nav.php";
 ?>
 
 <div class="container mt-4">

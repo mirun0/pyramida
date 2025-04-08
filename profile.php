@@ -81,7 +81,7 @@ $user = $stmt->fetch();
     <p><strong>Příjmení:</strong> <?php echo htmlspecialchars($user['lastName']); ?></p>
     <p><strong>Email:</strong> <?php echo htmlspecialchars($user['email']); ?></p>
 
-    <button class="btn btn-primary w-100" onclick="toggleForm('edit_form')">Upravit údaje</button>
+    <button class="btn btn btn-outline-secondary w-100" onclick="toggleForm('edit_form')">Upravit údaje</button>
     <form id="edit_form" method="post" action="update_profile.php" style="display:none;">
         <div class="mt-3">
             <label for="edit_firstName" class="form-label">Nové jméno</label>
@@ -98,7 +98,7 @@ $user = $stmt->fetch();
         <button type="submit" class="btn btn-success w-100 mt-3">Uložit změny</button>
     </form>
 
-    <button class="btn btn-warning w-100 mt-3" onclick="toggleForm('password_form')">Změnit heslo</button>
+    <button class="btn btn-outline-secondary w-100 mt-3" onclick="toggleForm('password_form')">Změnit heslo</button>
     <form id="password_form" method="post" action="change_password.php" style="display:none;">
         <div class="mt-3">
             <label for="current_password" class="form-label">Současné heslo</label>

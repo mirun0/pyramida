@@ -51,7 +51,7 @@ $screenings = $stmt->fetchAll();
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body>
-<?php include "layout/nav.php" ?>
+<?php include "layout/admin_nav.php" ?>
 
 <div class="container py-5">
     <div class="row">
@@ -66,7 +66,12 @@ $screenings = $stmt->fetchAll();
         </div>
     </div>
 
-    <h2 class="mt-5">Nadcházející promítání</h2>
+    <div class="d-flex justify-content-between align-items-center mt-5">
+        <h2 class="m-0">Nadcházející promítání</h2>
+        <a href="add_screening.php?film_id=<?= $filmId ?>" class="btn btn-success">
+            <i class="fa fa-plus"></i> Přidat promítání
+        </a>
+    </div>
     <table class="table table-dark table-striped mt-3">
         <thead>
         <tr>
@@ -87,7 +92,7 @@ $screenings = $stmt->fetchAll();
                 <td><?= htmlspecialchars($screening['subtitles_language']) ?></td>
                 <td><?= htmlspecialchars($screening['available_seats']) ?> / <?= htmlspecialchars($screening['total_seats']) ?></td>
                 <td>
-                <a href="edit_screening.php?screening_id=<?= $screening['screening_id'] ?>" class="btn btn-primary">Upravit</a>    
+                <a href="edit_screening.php?screening_id=<?= $screening['screening_id'] ?>" class="btn btn-warning">Upravit</a>
                 <a href="cancle_screening.php?film_id=<?= $filmId ?>&screening_id=<?= $screening['screening_id'] ?>" class="btn btn-danger" onclick="confirm('Opravdu chcete zrušit promítání?')">Zrušit</a>
                 </td>
             </tr>

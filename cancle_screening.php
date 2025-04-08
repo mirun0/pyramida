@@ -27,9 +27,9 @@ if ($userRole === null || $userRole['FK_role'] > 2) {
     header("Location: index.php");
     exit();
 } else {
-    // $sql = "DELETE FROM film_screening WHERE id = ?";
-    // $stmt = $conn->prepare($sql);
-    // $stmt->execute([$screeningId]);
+    $sql = "DELETE FROM film_screening WHERE id = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->execute([$screeningId]);
 }
 
 header("Location: manage_screening.php?id=" . $filmId);

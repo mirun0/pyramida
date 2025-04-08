@@ -16,11 +16,10 @@ body {
 .navbar {
     background-color: #1c1c1c;
     padding: 10px 20px;
-    height: 75px;
 }
 
-footer {
-    height: 75px;
+footer p {
+    margin: 0;
 }
 
 .navbar-nav {
@@ -36,10 +35,6 @@ footer {
 
 .navbar-toggler {
     border: none;
-}
-
-.container {
-    min-height: calc(100vh - 75px - 75px - 3rem);
 }
 
 .card {

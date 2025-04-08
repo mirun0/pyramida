@@ -87,7 +87,7 @@ if (isset($_POST['add'])) {
     <script src="https://cdn.jsdelivr.net/npm/@splidejs/splide/dist/js/splide.min.js"></script>
 </head>
 <body>
-<?php include "layout/nav.php"?>
+<?php include "layout/admin_nav.php"?>
 
 <div class="container mt-4">
     <h2></h2>

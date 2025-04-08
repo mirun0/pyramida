@@ -15,33 +15,25 @@ if ($userRole === null || $userRole['FK_role'] > 2) {
     exit();
 }
 
-$screeningId = (int)$_GET['screening_id'];
+$filmId = (int)$_GET['film_id'];
 
-if (!isset($screeningId)) {
+if (!isset($filmId)) {
     header("Location: film_administration.php");
     exit;
 }
 
 $sql = "SELECT 
-            DATE_FORMAT(dateTime, '%Y-%m-%d') AS date,
-            DATE_FORMAT(dateTime, '%H:%i') AS time,
-            price, FK_hall AS hall, 
-            film.id AS filmId,
-            film.length AS filmLength,
-            FK_film_has_dubbing AS filmHasDubbing, 
-            FK_film_has_subtitles AS filmHasSubtitles 
-        FROM film_screening 
-        JOIN film ON film.id = film_screening.FK_film 
-        WHERE film_screening.id = ?";
+            length AS filmLength
+        FROM film 
+        WHERE film.id = ?";
 $stmt = $conn->prepare($sql);
-$stmt->execute([$screeningId]);
+$stmt->execute([$filmId]);
 $screening = $stmt->fetch();
 
-if (!isset($screening["filmId"])) {
+if (!isset($filmId)) {
     header("Location: film_administration.php");
     exit;
 }
-$filmId = $screening["filmId"];
 $filmLength = $screening["filmLength"];
 
 $sql = "SELECT film_has_dubbing.id AS id, language.language AS language FROM film_has_dubbing 
@@ -80,7 +72,7 @@ if (isset($_POST['update'])) {
     } else {
         $sql = "call validate_screening_time(?, ?, ?, ?)";
         $stmt = $conn->prepare($sql);
-        $stmt->execute([$hall, $screeningId, $date, $time]);
+        $stmt->execute([$hall, $filmId, $date, $time]);
         $isValidScreeningTime = $stmt->fetch();
         $stmt->closeCursor();
         if ($isValidScreeningTime['result'] === FALSE)
@@ -110,9 +102,9 @@ if (isset($_POST['update'])) {
         }
     } else {
         $dateTime = $date . " " . $time;
-        $sql = "UPDATE film_screening SET dateTime = ?, price = ?, FK_hall = ?, FK_film_has_dubbing = ?, FK_film_has_subtitles = ? WHERE id = ?";
+        $sql = "INSERT INTO film_screening (FK_film, dateTime, price, FK_hall, FK_film_has_dubbing, FK_film_has_subtitles) VALUES (?,?,?,?,?,?)";
         $stmt = $conn->prepare($sql);
-        $stmt->execute([$dateTime, $price, $hall, $dubbing, $subtitles, $screeningId]);
+        $stmt->execute([$filmId, $dateTime, $price, $hall, $dubbing, $subtitles]);
         header("Location: manage_screening.php?id=$filmId");
         exit;
     }
@@ -145,11 +137,11 @@ if (isset($_POST['update'])) {
     <form method="post">
         <input type="hidden" id="film_id" value="<?= $filmId ?>">
         <input type="hidden" id="film_length" value="<?= $filmLength ?>">
-        <input type="hidden" id="screening_id" value="<?= $screeningId ?>">
-        <input type="hidden" id="screening_time" value="<?= $screening["time"] ?>">
+        <input type="hidden" id="screening_id" value="<?= $filmId ?>">
+        <input type="hidden" id="screening_time" value="">
         <div class="mb-3">
             <label class="form-label">Datum</label>
-            <input type="date" name="date" id="date" class="form-control" value="<?= $screening['date'] ?>" required>
+            <input type="date" name="date" id="date" class="form-control" required>
         </div>
         <div class="mb-3">
             <label class="form-label">Sál</label>
@@ -170,7 +162,7 @@ if (isset($_POST['update'])) {
 
         <div class="mb-3">
             <label class="form-label">Cena</label>
-            <input type="number" name="price" class="form-control" value="<?= $screening['price'] ?>" required>
+            <input type="number" name="price" class="form-control" required>
         </div>
         <div class="mb-3">
             <label class="form-label">Dabing</label>
