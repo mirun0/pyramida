@@ -856,7 +856,7 @@ delimiter ;
 
 -- call get_seat_information(17);
 
-drop procedure get_booking_information;
+-- drop procedure get_booking_information;
 delimiter //
 create procedure get_booking_information(in_booking_id int)
 begin
@@ -889,3 +889,35 @@ call get_booking_information(72);
 
 select * from film;
 
+-- Procedura - rezervace konkretniho uzivatele
+DELIMITER //
+
+CREATE PROCEDURE bookings_of_user(IN user_id INT UNSIGNED)
+BEGIN
+    SELECT 
+        b.id AS booking_id,
+        f.name AS film_name,
+        fs.dateTime AS screening_time,
+        b.price AS booking_price,
+        h.id AS hall_id,
+        d_lang.language AS dubbing_language,
+        s_lang.language AS subtitle_language,
+        GROUP_CONCAT(s.id ORDER BY s.id SEPARATOR ', ') AS seat_list
+    FROM booking b
+    JOIN film_screening fs ON b.FK_screening = fs.id
+    JOIN film f ON fs.FK_film = f.id
+    JOIN hall h ON fs.FK_hall = h.id
+    LEFT JOIN film_has_dubbing fhd ON fs.FK_film_has_dubbing = fhd.id
+    LEFT JOIN language d_lang ON fhd.FK_language = d_lang.id
+    LEFT JOIN film_has_subtitles fhs ON fs.FK_film_has_subtitles = fhs.id
+    LEFT JOIN language s_lang ON fhs.FK_language = s_lang.id
+    JOIN booking_has_seat bhs ON b.id = bhs.FK_booking
+    JOIN seat s ON bhs.FK_seat = s.id AND s.FK_hall = h.id
+    WHERE b.FK_user = user_id
+    GROUP BY b.id, f.name, fs.dateTime, b.price, h.id, h.path, d_lang.language, s_lang.language
+    ORDER BY fs.dateTime DESC;
+END //
+
+DELIMITER ;
+
+call bookings_of_user(5);

@@ -7,6 +7,7 @@
     <meta name="description" content="Web kina Pyramida">
     <meta name="author" content="Pyramida">
     <link rel="icon" type="image/x-icon" href="icons/pyramida.webp">
+    <link rel="stylesheet" href="css/style.css">
     <title>Profil uživatele</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css" crossorigin="anonymous">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
@@ -31,7 +32,7 @@
         .alert {
             text-align: center;
         }
-        .form-control, .input-group-text {
+        .form-control {
             background-color: #333;
             color: #f3f3f3;
             border: 1px solid #555;
@@ -115,6 +116,10 @@ $user = $stmt->fetch();
     </form>
 
     <div class="text-center mt-3">
+        <a href="user_reservation.php" class="btn btn-outline-secondary w-100">Moje rezervace</a>
+    </div>
+
+    <div class="text-center mt-3">
         <a href="index.php" class="btn btn-outline-secondary w-100">Zpět na hlavní stránku</a>
     </div>
 
@@ -130,8 +135,18 @@ $user = $stmt->fetch();
     });
 
     function toggleForm(formId) {
-        var form = document.getElementById(formId);
-        form.style.display = (form.style.display === 'none' || form.style.display === '') ? 'block' : 'none';
+        var editForm = document.getElementById('edit_form');
+        var passwordForm = document.getElementById('password_form');
+
+        if (formId === 'edit_form') {
+            editForm.style.display = (editForm.style.display === 'none' || editForm.style.display === '') ? 'block' : 'none';
+            // zavřít druhý formulář
+            passwordForm.style.display = 'none';
+        } else if (formId === 'password_form') {
+            passwordForm.style.display = (passwordForm.style.display === 'none' || passwordForm.style.display === '') ? 'block' : 'none';
+            // zavřít druhý formulář
+            editForm.style.display = 'none';
+        }
     }
 </script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
