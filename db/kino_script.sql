@@ -86,6 +86,21 @@ CREATE TABLE IF NOT EXISTS film_screening (
 ) ENGINE = MyISAM;
 
 SELECT 
+	DATE_FORMAT(film_screening.dateTime, "%H:%i") AS startTime,
+	DATE_FORMAT(DATE_ADD(film_screening.dateTime, INTERVAL film.length MINUTE), '%H:%i') AS endTime
+FROM hall
+	JOIN film_screening ON film_screening.FK_hall = hall.id
+	JOIN film ON film.id = film_screening.FK_film
+	WHERE hall.id = 4 AND DATE_FORMAT(film_screening.dateTime, "%Y-%m-%d") = "2025-05-16";
+    
+SELECT film_has_dubbing.id AS filmHasDubbingId, language.language AS language, FK_film FROM film_has_dubbing 
+    JOIN film ON film.id = film_has_dubbing.FK_film
+    JOIN language ON language.id = film_has_dubbing.FK_language;
+    
+SELECT film_has_subtitles.id AS filmHasSubtitlesId, language.language AS language, FK_film FROM film_has_subtitles
+    JOIN film ON film.id = film_has_subtitles.FK_film
+    JOIN language ON language.id = film_has_subtitles.FK_language;
+
 CREATE TABLE IF NOT EXISTS booking (
 	id INT UNSIGNED NOT NULL AUTO_INCREMENT,
     price decimal not null,
