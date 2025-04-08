@@ -156,7 +156,7 @@ if (isset($_POST['update'])) {
             <select name="hall" id="hall" class="form-control">
                 <?php 
                     while ($row = $halls->fetch(PDO::FETCH_ASSOC)) {
-                        echo "<option value='{$row['id']}'>{$row['id']}</option>";
+                        echo "<option value='{$row['id']}'" . ($row['id'] == $screening['hall'] ? " selected" : "") . ">{$row['id']}</option>";
                     }
                 ?>
             </select>

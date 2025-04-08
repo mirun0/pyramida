@@ -995,4 +995,7 @@ begin
 end //
 delimiter ;
 
-call validate_screening_time(4, 18, "2025-5-16", "13:28");
+call validate_screening_time(4, 18, "2025-5-16", "11:00");
+
+SELECT DATE_FORMAT(dateTime, "%Y-%m-%d") AS date, FK_hall as hallId, TIME(dateTime) AS startTime, TIME(DATE_ADD(dateTime, INTERVAL film.length MINUTE)) AS endTime, film_screening.id AS screeningId 
+FROM film_screening JOIN film ON film.id = film_screening.FK_film WHERE FK_hall = 4 AND DATE_FORMAT(dateTime, "%Y-%m-%d") = "2025-05-16";
