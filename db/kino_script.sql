@@ -109,6 +109,7 @@ CREATE TABLE IF NOT EXISTS review (
 	id INT UNSIGNED NOT NULL AUTO_INCREMENT,
 	text LONGTEXT NOT NULL,
 	stars INT NOT NULL,
+    datetime datetime not null,
 	FK_user INT UNSIGNED REFERENCES user(id),
 	FK_film INT UNSIGNED REFERENCES film(id),
 	PRIMARY KEY (id)
@@ -406,68 +407,68 @@ INSERT INTO booking_has_seat(FK_booking, FK_seat) VALUES
     (56, 10), (56, 11), (56, 12);
 
 -- SET FOREIGN_KEY_CHECKS = 0;
-INSERT INTO review(text, stars, FK_user, FK_film) VALUES
+INSERT INTO review(text, stars, datetime, FK_user, FK_film) VALUES
     -- Film 1
-    ('Skvělý film! Výborné herecké výkony a napínavý děj.', 5, 3, 1),
-    ('Skvělý film.', 5, 7, 1),
+    ('Skvělý film! Výborné herecké výkony a napínavý děj.', 5, now(), 3, 1),
+    ('Skvělý film.', 5, now(), 7, 1),
     -- Film 2
-    ('Perfektní atmosféra, napětí až do konce!', 5, 8, 2),
-    ('Trochu pomalejší rozjezd, ale celkově super.', 4, 15, 2),
-    ('Pecička.', 5, 8, 2),
+    ('Perfektní atmosféra, napětí až do konce!', 5, now(), 8, 2),
+    ('Trochu pomalejší rozjezd, ale celkově super.', 4, now(), 15, 2),
+    ('Pecička.', 5, now(), 8, 2),
     -- Film 3
-    ('Děj byl trochu předvídatelný, ale jinak fajn.', 3, 6, 3),
-    ('Výborné efekty a zajímavá zápletka!', 5, 19, 3),
+    ('Děj byl trochu předvídatelný, ale jinak fajn.', 3, now(), 6, 3),
+    ('Výborné efekty a zajímavá zápletka!', 5, now(), 19, 3),
     -- Film 4
-    ('Trochu nuda, ale herci to zachránili.', 2, 11, 4),
-    ('Líbilo se mi to, určitě doporučuji.', 4, 22, 4),
+    ('Trochu nuda, ale herci to zachránili.', 2, now(), 11, 4),
+    ('Líbilo se mi to, určitě doporučuji.', 4, now(), 22, 4),
     -- Film 5
-    ('Mistrné zpracování a emoce na maximum!', 5, 1, 5),
-    ('Film měl své slabé chvilky, ale celkově dobré.', 4, 10, 5),
+    ('Mistrné zpracování a emoce na maximum!', 5, now(), 1, 5),
+    ('Film měl své slabé chvilky, ale celkově dobré.', 4, now(), 10, 5),
     -- Film 6
-    ('Skvělý soundtrack a vizuální efekty.', 5, 5, 6),
-    ('Příběh mě moc neoslovil, ale bylo to dobře natočené.', 3, 14, 6),
+    ('Skvělý soundtrack a vizuální efekty.', 5, now(), 5, 6),
+    ('Příběh mě moc neoslovil, ale bylo to dobře natočené.', 3, now(), 14, 6),
     -- Film 7
-    ('Nejlepší film roku, nemám co dodat!', 5, 9, 7),
-    ('Čekal jsem víc originality.', 3, 17, 7),
+    ('Nejlepší film roku, nemám co dodat!', 5, now(), 9, 7),
+    ('Čekal jsem víc originality.', 3, now(), 17, 7),
     -- Film 8
-    ('Temná atmosféra, která mě úplně pohltila.', 5, 2, 8),
-    ('Zbytečně dlouhé, ale jinak dobré.', 3, 13, 8),
+    ('Temná atmosféra, která mě úplně pohltila.', 5, now(), 2, 8),
+    ('Zbytečně dlouhé, ale jinak dobré.', 3, now(), 13, 8),
     -- Film 9
-    ('Tenhle film mě bavil od začátku do konce.', 5, 4, 9),
-    ('Slabší scénář, ale výborná kamera.', 3, 20, 9),
+    ('Tenhle film mě bavil od začátku do konce.', 5, now(), 4, 9),
+    ('Slabší scénář, ale výborná kamera.', 3, now(), 20, 9),
     -- Film 10
-    ('Geniální film! Už dlouho jsem neviděl něco tak dobrého.', 5, 16, 10),
-    ('Docela dobré, ale chyběla mi tam akce.', 4, 18, 10),
+    ('Geniální film! Už dlouho jsem neviděl něco tak dobrého.', 5, now(), 16, 10),
+    ('Docela dobré, ale chyběla mi tam akce.', 4, now(), 18, 10),
     -- Film 11
-    ('Originální příběh a skvělá atmosféra.', 5, 12, 11),
-    ('Hodně zajímavý film, ale mohl být kratší.', 4, 21, 11),
+    ('Originální příběh a skvělá atmosféra.', 5, now(), 12, 11),
+    ('Hodně zajímavý film, ale mohl být kratší.', 4, now(), 21, 11),
     -- Film 12
-    ('Tento film mě úplně dostal, úžasné zpracování!', 5, 7, 12),
-    ('Moc pomalé tempo, ale jinak fajn.', 3, 15, 12),
+    ('Tento film mě úplně dostal, úžasné zpracování!', 5, now(), 7, 12),
+    ('Moc pomalé tempo, ale jinak fajn.', 3, now(), 15, 12),
     -- Film 13
-    ('Děsivé a napínavé, rozhodně doporučuji!', 5, 6, 13),
-    ('Nebylo to špatné, ale viděl jsem lepší.', 3, 19, 13),
+    ('Děsivé a napínavé, rozhodně doporučuji!', 5, now(), 6, 13),
+    ('Nebylo to špatné, ale viděl jsem lepší.', 3, now(), 19, 13),
     -- Film 14
-    ('Emotivní a nádherně natočené.', 5, 10, 14),
-    ('Zajímavý koncept, ale realizace pokulhávala.', 3, 2, 14),
+    ('Emotivní a nádherně natočené.', 5, now(), 10, 14),
+    ('Zajímavý koncept, ale realizace pokulhávala.', 3, now(), 2, 14),
     -- Film 15
-    ('Jednoznačně nejlepší sci-fi poslední doby.', 5, 1, 15),
-    ('Dobrý film, ale očekával jsem něco jiného.', 4, 22, 15),
+    ('Jednoznačně nejlepší sci-fi poslední doby.', 5, now(), 1, 15),
+    ('Dobrý film, ale očekával jsem něco jiného.', 4, now(), 22, 15),
     -- Film 16
-    ('Akce od začátku do konce, paráda!', 5, 5, 16),
-    ('Nuda, ale asi jsem neměl správnou náladu.', 2, 17, 16),
+    ('Akce od začátku do konce, paráda!', 5, now(), 5, 16),
+    ('Nuda, ale asi jsem neměl správnou náladu.', 2, now(), 17, 16),
     -- Film 17
-    ('Vynikající herecké výkony a zajímavý děj.', 5, 8, 17),
-    ('Trochu moc dlouhé, ale jinak fajn.', 4, 14, 17),
+    ('Vynikající herecké výkony a zajímavý děj.', 5, now(), 8, 17),
+    ('Trochu moc dlouhé, ale jinak fajn.', 4, now(), 14, 17),
     -- Film 18
-    ('Romantika v tom nejlepším podání.', 5, 9, 18),
-    ('Předvídatelné, ale příjemné na koukání.', 3, 18, 18),
+    ('Romantika v tom nejlepším podání.', 5, now(), 9, 18),
+    ('Předvídatelné, ale příjemné na koukání.', 3, now(), 18, 18),
     -- Film 19
-    ('Naprosto šílené, ale skvělé!', 5, 3, 19),
-    ('Zajímavý vizuální styl, ale slabší scénář.', 4, 20, 19),
+    ('Naprosto šílené, ale skvělé!', 5, now(), 3, 19),
+    ('Zajímavý vizuální styl, ale slabší scénář.', 4, now(), 20, 19),
     -- Film 20
-    ('Dojemné a silné, určitě doporučuji.', 5, 11, 20),
-    ('Hodně přehnané, ale dalo se na to dívat.', 3, 12, 20);
+    ('Dojemné a silné, určitě doporučuji.', 5, now(), 11, 20),
+    ('Hodně přehnané, ale dalo se na to dívat.', 3, now(), 12, 20);
 -- SET FOREIGN_KEY_CHECKS = 1;
 
 -- Pohled 1 - filmy podle data vydání
@@ -887,7 +888,48 @@ delimiter ;
 select * from film;
 call get_booking_information(72);
 
-select * from film;
+delimiter //
+create procedure get_all_reviews(in_film_id int)
+begin
+	select 
+		review.id as id,
+		review.text as text, 
+        review.stars as stars, 
+        review.datetime as datetime,
+        review.FK_user as user_id,
+        (select get_user_full_name(review.FK_user)) as username
+	from review 
+    join user on user.id = review.FK_user
+    where FK_film = in_film_id;
+end //
+delimiter ;
+
+call get_all_reviews(7);
+
+delimiter //
+create procedure delete_review(in_review_id int)
+begin
+	delete from review
+    where review.id = in_review_id;
+end //
+delimiter ;
+
+delimiter //
+create procedure add_review(in_text longtext, in_stars int, in_user_id int, in_film_id int)
+begin
+	insert into review(text, stars, datetime, FK_user, FK_film) values (in_text, in_stars, now(), in_user_id, in_film_id);
+end //
+delimiter ;
+
+call add_review("spica", 5, 3, 7);
+
+SELECT FK_user from review where review.id = 43;
+
+
+
+
+
+
 
 -- Procedura - rezervace konkretniho uzivatele
 DELIMITER //
