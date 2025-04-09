@@ -74,6 +74,9 @@ CREATE TABLE IF NOT EXISTS film_has_subtitles (
 	PRIMARY KEY (id)
 ) ENGINE = MyISAM;
 
+SELECT * FROM film_has_dubbing;
+SELECT * FROM film;
+
 CREATE TABLE IF NOT EXISTS film_screening (
 	id INT UNSIGNED NOT NULL AUTO_INCREMENT,
 	dateTime DATETIME NOT NULL,
@@ -563,12 +566,13 @@ ORDER BY film_screening.dateTime ASC;
 DELIMITER //
 
 CREATE PROCEDURE add_film (
-	name VARCHAR(60),
-    length INT UNSIGNED,
-    releaseDate DATE,
-    description LONGTEXT,
-    image VARCHAR(255),
-    FK_genre INT UNSIGNED
+	IN name VARCHAR(60),
+    IN length INT UNSIGNED,
+    IN releaseDate DATE,
+    IN description LONGTEXT,
+    IN image VARCHAR(255),
+    IN FK_genre INT UNSIGNED,
+    OUT film_id INT UNSIGNED
 ) BEGIN
 	DECLARE genre_exists INT;
     SELECT COUNT(*) INTO genre_exists FROM genre WHERE id = FK_genre;
@@ -579,6 +583,8 @@ CREATE PROCEDURE add_film (
     ELSE
         INSERT INTO film(name, length, releaseDate, description, image, FK_genre)
         VALUES (name, length, releaseDate, description, image, FK_genre);
+        
+        SET film_id = LAST_INSERT_ID();
     END IF;
 END //
 
@@ -971,6 +977,85 @@ END //
 DELIMITER ;
 
 call bookings_of_user(5);
+
+drop procedure get_film_dubbings;
+delimiter //
+create procedure get_film_dubbings(
+	in_film_id INT UNSIGNED
+)
+begin
+	SELECT FK_language AS languageId FROM film_has_dubbing
+    WHERE FK_film = in_film_id;
+end //
+delimiter ;
+
+drop procedure add_dubbing_to_film;
+delimiter //
+create procedure add_dubbing_to_film(
+	in_film_id INT UNSIGNED,
+    in_language_id INT UNSIGNED
+)
+begin
+	DECLARE film_id int unsigned;
+    DECLARE language_id int unsigned;
+    
+    SELECT film.id INTO film_id FROM film WHERE film.id = in_film_id;
+    SELECT language.id INTO language_id FROM language WHERE language.id = in_language_id;
+
+	INSERT INTO film_has_dubbing (FK_film, FK_language) VALUES (film_id, language_id);
+end //
+delimiter ;
+
+drop procedure delete_all_film_dubbings;
+delimiter //
+create procedure delete_all_film_dubbings(
+	in_film_id INT UNSIGNED
+)
+begin
+	DELETE FROM film_has_dubbing WHERE FK_film = in_film_id;
+end //
+delimiter ;
+
+drop procedure get_film_subtitles;
+delimiter //
+create procedure get_film_subtitles(
+	in_film_id INT UNSIGNED
+)
+begin
+	SELECT FK_language AS languageId FROM film_has_subtitles
+    WHERE FK_film = in_film_id;
+end //
+delimiter ;
+
+SELECT * FROM film_screening;
+
+drop procedure add_subtitles_to_film;
+delimiter //
+create procedure add_subtitles_to_film(
+	in_film_id INT UNSIGNED,
+    in_language_id INT UNSIGNED
+)
+begin
+	DECLARE film_id int unsigned;
+    DECLARE language_id int unsigned;
+    
+    SELECT film.id INTO film_id FROM film WHERE film.id = in_film_id;
+    SELECT language.id INTO language_id FROM language WHERE language.id = in_language_id;
+
+	INSERT INTO film_has_subtitles (FK_film, FK_language) VALUES (film_id, language_id);
+end //
+delimiter ;
+
+drop procedure delete_all_film_subtitles;
+delimiter //
+create procedure delete_all_film_subtitles(
+	in_film_id INT UNSIGNED
+)
+begin
+	DELETE FROM film_has_subtitles WHERE FK_film = in_film_id;
+end //
+delimiter ;
+
 -- drop procedure validate_screening_time;
 delimiter //
 create procedure validate_screening_time(in_hall_id int, in_screening_id int, in_screening_date date, in_screening_time time)

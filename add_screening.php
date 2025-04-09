@@ -28,13 +28,13 @@ $sql = "SELECT
         WHERE film.id = ?";
 $stmt = $conn->prepare($sql);
 $stmt->execute([$filmId]);
-$screening = $stmt->fetch();
+$film = $stmt->fetch();
 
 if (!isset($filmId)) {
     header("Location: film_administration.php");
     exit;
 }
-$filmLength = $screening["filmLength"];
+$filmLength = $film["filmLength"];
 
 $sql = "SELECT film_has_dubbing.id AS id, language.language AS language FROM film_has_dubbing 
     JOIN film ON film.id = film_has_dubbing.FK_film
@@ -148,7 +148,7 @@ if (isset($_POST['update'])) {
             <select name="hall" id="hall" class="form-control">
                 <?php 
                     while ($row = $halls->fetch(PDO::FETCH_ASSOC)) {
-                        echo "<option value='{$row['id']}'" . ($row['id'] == $screening['hall'] ? " selected" : "") . ">{$row['id']}</option>";
+                        echo "<option value='{$row['id']}'>{$row['id']}</option>";
                     }
                 ?>
             </select>
@@ -169,7 +169,7 @@ if (isset($_POST['update'])) {
             <select name="dubbing" class="form-control">
                 <?php 
                     while ($row = $dubbings->fetch(PDO::FETCH_ASSOC)) {
-                        echo "<option value='{$row['id']}'" . ($row['id'] == $screening['filmHasDubbing'] ? " selected" : "") . ">{$row['language']}</option>";
+                        echo "<option value='{$row['id']}'>{$row['language']}</option>";
                     }
                 ?>
             </select>
@@ -180,7 +180,7 @@ if (isset($_POST['update'])) {
                 <option value="-1">Žádné titulky</option>
                 <?php 
                     while ($row = $subtitles->fetch(PDO::FETCH_ASSOC)) {
-                        echo "<option value='{$row['id']}'" . ($row['id'] == $screening['filmHasSubtitles'] ? " selected" : "") . ">{$row['language']}</option>";
+                        echo "<option value='{$row['id']}'>{$row['language']}</option>";
                     }
                 ?>
             </select>

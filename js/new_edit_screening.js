@@ -24,7 +24,6 @@ async function getOccupiedTimesForScreening(date, hallId) {
     })
     const response = await res.json();
     if (response.ok === true && Array.isArray(response.times)) {
-        console.log(response.times);
         return response.times;
     } else {
         return [];
@@ -76,8 +75,10 @@ function createTimeOptions(occupiedTimes) {
 async function refreshTimes() {
     const date = date_input.value;
     const hallId = hall_select.value;
-    const occupiedTimes = await getOccupiedTimesForScreening(date, hallId);
-    createTimeOptions(occupiedTimes);
+    if (date && hallId) {
+        const occupiedTimes = await getOccupiedTimesForScreening(date, hallId);
+        createTimeOptions(occupiedTimes);
+    }
 }
 
 refreshTimes();

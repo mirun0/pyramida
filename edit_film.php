@@ -15,15 +15,29 @@ if ($userRole === null || $userRole['FK_role'] > 2) {
     exit();
 }
 
-$filmId = (int)$_GET['id'];
+$filmId = isset($_GET['id']) ? $_GET['id'] : 0;
 $sql = "SELECT name, length, releaseDate, description, image, FK_genre AS genre FROM film WHERE id = ?";
 $stmt = $conn->prepare($sql);
 $stmt->execute([$filmId]);
 $film = $stmt->fetch();
-if (!isset($film)) {
-    header("Location: login.php");
+if ($film == NULL) {
+    header("Location: film_administration.php");
     exit;
 }
+
+$stmt = $conn->query("SELECT id, language FROM language");
+$languages = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+$sql = "CALL get_film_dubbings(?)";
+$stmt = $conn->prepare($sql);
+$stmt->execute([$filmId]);
+$dubbings = $stmt->fetchAll(PDO::FETCH_COLUMN, 0);
+
+$sql = "CALL get_film_subtitles(?)";
+$stmt = $conn->prepare($sql);
+$stmt->execute([$filmId]);
+$subtitles = $stmt->fetchAll(PDO::FETCH_COLUMN, 0);
+$stmt->closeCursor();
 
 if (isset($_POST['update'])) {
     $name = $_POST['name'];
@@ -31,6 +45,8 @@ if (isset($_POST['update'])) {
     $releaseDate = $_POST['releaseDate'];
     $description = $_POST['description'];
     $genre = $_POST['genre'];
+    $dubbingIds = isset($_POST['dubbing']) ? $_POST['dubbing'] : NULL;
+    $subtitlesIds = isset($_POST['subtitles']) ? $_POST['subtitles'] : [];
 
     if (empty($name)) {
         $errors[] = "Název filmu je povinný.";
@@ -49,6 +65,9 @@ if (isset($_POST['update'])) {
     } else {
         $stmt = $conn->query("SELECT * FROM genre WHERE id = $genre");
         if ($stmt->fetch() === null) $errors[] = "Vyberte platný žánr.";
+    }
+    if (!isset($dubbingIds)) {
+        $errors[] = "Musí být vybraný alespoň jeden dabing";
     }
 
     $filmId = (int)$_GET['id'];
@@ -88,6 +107,24 @@ if (isset($_POST['update'])) {
             $sql = "UPDATE film SET name = ?, length = ?, releaseDate = ?, description = ?, FK_genre = ? WHERE id = ?";
             $stmt = $conn->prepare($sql);
             $stmt->execute([$name, $length, $releaseDate, $description, $genre, $filmId]);
+        }
+
+        $sql = "CALL delete_all_film_dubbings(?)";
+        $stmt = $conn->prepare($sql);
+        $stmt->execute([$filmId]);
+        foreach ($dubbingIds as $languageId) {
+            $sql = "CALL add_dubbing_to_film(?, ?)";
+            $stmt = $conn->prepare($sql);
+            $stmt->execute([$filmId, $languageId]);
+        }
+
+        $sql = "CALL delete_all_film_subtitles(?)";
+        $stmt = $conn->prepare($sql);
+        $stmt->execute([$filmId]);
+        foreach ($subtitlesIds as $languageId) {
+            $sql = "CALL add_subtitles_to_film(?, ?)";
+            $stmt = $conn->prepare($sql);
+            $stmt->execute([$filmId, $languageId]);
         }
 
         header("Location: film_administration.php");
@@ -155,6 +192,28 @@ if (isset($_POST['update'])) {
                 }
                 ?>
             </select>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Dabing</label><br>
+            <?php 
+                for ($i = 0; $i < count($languages); $i++) {
+                    echo "<div class='form-check form-check-inline'>
+                        <input class='form-check-input' type='checkbox' name='dubbing[]' value='{$languages[$i]['id']}' id='dub{$i}'" . (in_array($languages[$i]['id'], $dubbings) ? " checked" : "") . ">
+                        <label class='form-check-label' for='dub{$i}'>{$languages[$i]['language']}</label>
+                        </div>";
+                }
+            ?>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Titulky</label><br>
+            <?php 
+                for ($i = 0; $i < count($languages); $i++) {
+                    echo "<div class='form-check form-check-inline'>
+                        <input class='form-check-input' type='checkbox' name='subtitles[]' value='{$languages[$i]['id']}' id='sub{$i}'" . (in_array($languages[$i]['id'], $subtitles) ? " checked" : "") . ">
+                        <label class='form-check-label' for='sub{$i}'>{$languages[$i]['language']}</label>
+                        </div>";
+                }
+            ?>
         </div>
         <button type="submit" class="btn btn-primary" name="update">Uložit</button>
         <a href="film_administration.php" class="btn btn-secondary">Zpět</a>
