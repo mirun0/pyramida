@@ -10,7 +10,8 @@ $genres = $stmt->fetchAll();
 
 // Získání aktuální stránky (výchozí je 1)
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-$limit = 18;
+// zde upravte počet filmu na stranku
+$limit = 20;
 $offset = ($page - 1) * $limit;
 
 // Získání parametrů pro filtrování
@@ -117,14 +118,13 @@ $totalPages = ceil($totalFilms / $limit);
 
     <div class="row">
         <?php foreach ($films as $film): ?>
-            <div class="col-md-4 mb-4">
-                <div class="card">
+            <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+                <div class="card film-card">
                     <img src="img/<?= htmlspecialchars($film['film_image']) ?>" class="card-img-top" alt="<?= htmlspecialchars($film['film_name']) ?>">
                     <div class="card-body">
                         <h5 class="card-title"><?= htmlspecialchars($film['film_name']) ?></h5>
-                        <p class="card-text"><?= htmlspecialchars($film['description']) ?></p>
                         <p><strong>Žánr:</strong> <?= htmlspecialchars($film['genre_name']) ?></p>
-                        <p><strong>Hodnocení:</strong> <?= number_format($film['average_rating'], 1) ?> ★</p>
+                        <p><strong>Hodnocení:</strong> <?= number_format($film['average_rating'], 1) ?> ⭐</p>
                         <a href="screening_of_film.php?film_id=<?= $film['film_id'] ?>" class="btn btn-primary">Zobrazit promítání</a>
                     </div>
                 </div>

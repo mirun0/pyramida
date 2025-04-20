@@ -54,6 +54,20 @@ $reviews = $stmt->fetchAll();
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@300..900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        #rating-stars i {
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        #rating-stars i:hover {
+            transform: scale(1.2);
+        }
+        .stars {
+            margin-bottom: 10px;
+        }
+    </style>
 </head>
 <body>
 <?php include "layout/nav.php" ?>
@@ -66,7 +80,7 @@ $reviews = $stmt->fetchAll();
         <div class="col-md-8">
             <h1><?= htmlspecialchars($film['film_name']) ?></h1>
             <p><strong>Žánr:</strong> <?= htmlspecialchars($film['genre_name']) ?></p>
-            <div>
+            <div class="stars">
                 <strong>Hodnocení:</strong>
                 <span id="film-stars" class="text-warning" style="color: white">
                     <i class="fa-regular fa-star"></i>
@@ -110,86 +124,69 @@ $reviews = $stmt->fetchAll();
     </table>
 
     <h2 class="mt-5">Recenze</h2>
-    
-    <style>
-  #rating-stars i {
-    cursor: pointer;
-    transition: transform 0.2s ease;
-  }
+    <div class="container mt-4" id="reviews-anchor">
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="mb-3">Přidat recenzi:</h5>
+                <form action="add_review.php?film_id=<?= $_GET["film_id"] ?>" method="POST">
+                    <div class="mb-3">
+                    <span class="text-warning" id="rating-stars">
+                            <span style="color: white">Hodnocení: </span>
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-regular fa-star"></i>
+                            <i class="fa-regular fa-star"></i>
+                            <span style="color: red">(vyberte počet hvězd)</span>
+                        </span>
+                    </div>
+                    <input type="hidden" name="stars" id="stars" value="10">
 
-  #rating-stars i:hover {
-    transform: scale(1.2);
-  }
-</style>
+                    <div class="mb-3">
+                        <?= !isset($userId) ? '<span class="px-2 ps-0" style="color: gray">Pro napsání recenze se přihlaste.</span>' : '' ?>
+                        <textarea <?= !isset($userId) ? 'disabled' : '' ?> class="form-control bg-dark" style="border: none; color:white;" id="text" name="text" rows="2" required></textarea>
+                    </div>
 
-  <div class="container mt-4" id="reviews-anchor">  
-
-  <div class="card mb-4">
-        <div class="card-body">
-        <h5 class="mb-3">Přidat recenzi:</h5>
-        <form action="add_review.php?film_id=<?= $_GET["film_id"] ?>" method="POST">
-
-    <div class="mb-3">
-    <span class="text-warning" id="rating-stars">
-            <span style="color: white">Hodnocení: </span>
-            <i class="fa-solid fa-star"></i>
-            <i class="fa-solid fa-star"></i>
-            <i class="fa-solid fa-star"></i>
-            <i class="fa-regular fa-star"></i>
-            <i class="fa-regular fa-star"></i>
-            <span style="color: red">(vyberte počet hvězd)</span>
-        </span>
-    </div>
-    <input type="hidden" name="stars" id="stars" value="10">
-
-    <div class="mb-3">
-        <?= !isset($userId) ? '<span class="px-2 ps-0" style="color: gray">Pro napsání recenze se přihlaste.</span>' : '' ?>
-        <textarea <?= !isset($userId) ? 'disabled' : '' ?> class="form-control bg-dark" style="border: none; color:white;" id="text" name="text" rows="2" required></textarea>
-    </div>
-
-    <button type="submit" <?= !isset($userId) ? 'disabled' : '' ?> class="btn btn-primary">Odeslat</button>
-  </form>
+                    <button type="submit" <?= !isset($userId) ? 'disabled' : '' ?> class="btn btn-primary">Odeslat</button>
+                </form>
+            </div>
         </div>
-    </div>
-
-  <div class="d-flex flex-column gap-3">
-    <?php if(count($reviews) == 0) { ?>
-        <div class="p-3 text-center">
-            <p>Film zatím nemá žádné recenze, buď první kdo zareaguje.</p>
-        </div>
-    <?php }?>
-
-    <?php foreach ($reviews as $review): ?>
-        <div class="p-3 rounded bg-dark">
-        <div class="d-flex justify-content-between mb-2">
-            <strong><?= htmlspecialchars($review['username']) ?></strong>
-            <?php if(isset($userId) && ($userRole['FK_role'] < 2 || $review['user_id'] == $userId)) { ?>
-                <div class="px-2 gap-2 d-flex">
-                    <?php if($review['user_id'] == $userId) { ?>
-                        <a href="" id="edit-review"><i class="fa-solid fa-pen btn-primary"></i></a>
-                    <?php } ?>
-                <a href="delete_review?film_id=<?= $_GET["film_id"] ?>&review_id=<?= $review['id'] ?>" onclick="return confirm('Opravdu chcete tuto recenzi smazat?');"><i class="fa-solid fa-trash" style="color: red;"></i></a>
+        <div class="d-flex flex-column gap-3">
+            <?php if(count($reviews) == 0) { ?>
+                <div class="p-3 text-center">
+                    <p>Film zatím nemá žádné recenze, buď první kdo zareaguje.</p>
                 </div>
-            <?php } ?>
-        </div>
-        <div class="mb-2"><small style="color: gray"><?= htmlspecialchars($review['datetime']) ?></small></div>
-        <div class="mb-2">
-            <span class="text-warning">
-                <?php for($i = 1; $i <= $review['stars']; $i++) { ?>
-                    <i class="fa-solid fa-star"></i>
-                <?php } for($i = 1; $i <= 5 - $review['stars']; $i++) { ?>
-                    <i class="fa-regular fa-star"></i>
-                <?php } ?>
-                <span style="color: white;"><?= htmlspecialchars($review['stars']) ?>/5</span>
-            </span>
-        </div>
-        <p><?= htmlspecialchars($review['text']) ?></p>
-        </div>
-    <?php endforeach; ?>
+            <?php }?>
 
-  </div>
-</div>
-
+            <?php foreach ($reviews as $review): ?>
+                <div class="p-3 rounded bg-dark">
+                <div class="d-flex justify-content-between mb-2">
+                    <strong><?= htmlspecialchars($review['username']) ?></strong>
+                    <?php if(isset($userId) && ($userRole['FK_role'] < 2 || $review['user_id'] == $userId)) { ?>
+                        <div class="px-2 gap-2 d-flex">
+                            <?php if($review['user_id'] == $userId) { ?>
+                                <a href="" id="edit-review"><i class="fa-solid fa-pen btn-primary"></i></a>
+                            <?php } ?>
+                        <a href="delete_review?film_id=<?= $_GET["film_id"] ?>&review_id=<?= $review['id'] ?>" onclick="return confirm('Opravdu chcete tuto recenzi smazat?');"><i class="fa-solid fa-trash" style="color: red;"></i></a>
+                        </div>
+                    <?php } ?>
+                </div>
+                <div class="mb-2"><small style="color: gray"><?= htmlspecialchars($review['datetime']) ?></small></div>
+                <div class="mb-2">
+                    <span class="text-warning">
+                        <?php for($i = 1; $i <= $review['stars']; $i++) { ?>
+                            <i class="fa-solid fa-star"></i>
+                        <?php } for($i = 1; $i <= 5 - $review['stars']; $i++) { ?>
+                            <i class="fa-regular fa-star"></i>
+                        <?php } ?>
+                        <span style="color: white;"><?= htmlspecialchars($review['stars']) ?>/5</span>
+                    </span>
+                </div>
+                <p><?= htmlspecialchars($review['text']) ?></p>
+                </div>
+            <?php endforeach; ?>
+        </div>
+    </div>
 </div>
 
 <script>
@@ -215,11 +212,6 @@ $reviews = $stmt->fetchAll();
     });
 
     const editReview = document.getElementById('edit-review');
-
-    editReview.addEventListener('click', () => {
-        // dodelat edit recenze
-    });
-
 
     const filmStars = document.querySelectorAll('#film-stars i');          
     const avgRatingNum = <?= json_encode(number_format($film['average_rating'], 1)) ?> 

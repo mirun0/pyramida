@@ -47,10 +47,11 @@ $topRatedFilms = $stmt->fetchAll();
                     <li class="splide__slide">
                         <div class="film-card">
                             <img src="img/<?= htmlspecialchars($film['image']) ?>" alt="<?= htmlspecialchars($film['film_name']) ?>">
-                            <h5><?= htmlspecialchars($film['film_name']) ?></h5>
-                            <p><?= htmlspecialchars($film['description']) ?></p>
-                            <p><strong>Hodnocení:</strong> <?= number_format($film['average_rating'], 1) ?> ⭐</p>
-                            <a href="screening_of_film.php?film_id=<?= number_format($film['film_id']) ?>" class="btn btn-primary">Více informací</a>
+                            <div class="card-body">
+                                <h5><?= htmlspecialchars($film['film_name']) ?></h5>
+                                <p><strong>Hodnocení:</strong> <?= number_format($film['average_rating'], 1) ?> ⭐</p>
+                                <a href="screening_of_film.php?film_id=<?= number_format($film['film_id']) ?>" class="btn btn-primary">Více informací</a>
+                            </div>
                         </div>
                     </li>
                 <?php endforeach; ?>
@@ -71,10 +72,11 @@ $topRatedFilms = $stmt->fetchAll();
                     <li class="splide__slide">
                         <div class="film-card">
                             <img src="img/<?= htmlspecialchars($film['image']) ?>" alt="<?= htmlspecialchars($film['film_name']) ?>">
-                            <h5><?= htmlspecialchars($film['film_name']) ?></h5>
-                            <p><?= htmlspecialchars($film['description']) ?></p>
-                            <p><strong>Hodnocení:</strong> <?= number_format($film['average_rating'], 1) ?> ⭐</p>
-                            <a href="screening_of_film.php?film_id=<?= number_format($film['film_id']) ?>" class="btn btn-primary">Více informací</a>
+                            <div class="card-body">
+                                <h5><?= htmlspecialchars($film['film_name']) ?></h5>
+                                <p><strong>Hodnocení:</strong> <?= number_format($film['average_rating'], 1) ?> ⭐</p>
+                                <a href="screening_of_film.php?film_id=<?= number_format($film['film_id']) ?>" class="btn btn-primary">Více informací</a>
+                            </div>
                         </div>
                     </li>
                 <?php endforeach; ?>
