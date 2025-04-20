@@ -15,12 +15,17 @@ if ($userRole === null || $userRole['FK_role'] > 2) {
     exit();
 }
 
+$stmt = $conn->query("SELECT id, language FROM language");
+$languages = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
 if (isset($_POST['add'])) {
     $name = $_POST['name'];
     $length = $_POST['length'];
     $releaseDate = $_POST['releaseDate'];
     $description = $_POST['description'];
     $genre = $_POST['genre'];
+    $dubbingIds = $_POST['dubbing'];
+    $subtitlesIds = isset($_POST['subtitles']) ? $_POST['subtitles'] : [];
 
     if (empty($name)) {
         $errors[] = "Název filmu je povinný.";
@@ -48,6 +53,9 @@ if (isset($_POST['add'])) {
             $errors[] = "Obrázek musí být ve formátu JPG, PNG, GIF nebo WEBP.";
         }
     }
+    if (!isset($dubbingIds)) {
+        $errors[] = "Musí být vybraný alespoň jeden dabing";
+    }
 
     // Pokud jsou chyby, vypíšeme je
     if (!empty($errors)) {
@@ -59,9 +67,23 @@ if (isset($_POST['add'])) {
         $fileName = basename($_FILES['image']['name']);
         $targetFilePath = $uploadDir . $fileName;
         if (move_uploaded_file($_FILES['image']['tmp_name'], $targetFilePath)) {
-            $sql = "CALL add_film(?, ?, ?, ?, ?, ?)";
+            $sql = "CALL add_film(?, ?, ?, ?, ?, ?, @newId)";
             $stmt = $conn->prepare($sql);
             $stmt->execute([$name, $length, $releaseDate, $description, $fileName, $genre]);
+
+            $result = $conn->query("SELECT @newId AS film_id")->fetch(PDO::FETCH_ASSOC);
+            $filmId = $result['film_id'];
+            foreach ($dubbingIds as $languageId) {
+                $sql = "CALL add_dubbing_to_film(?, ?)";
+                $stmt = $conn->prepare($sql);
+                $stmt->execute([$filmId, $languageId]);
+            }
+            foreach ($subtitlesIds as $languageId) {
+                $sql = "CALL add_subtitles_to_film(?, ?)";
+                $stmt = $conn->prepare($sql);
+                $stmt->execute([$filmId, $languageId]);
+            }
+
             header("Location: film_administration.php");
             exit();
         } else
@@ -126,6 +148,28 @@ if (isset($_POST['add'])) {
                 }
                 ?>
             </select>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Dabing</label><br>
+            <?php 
+                for ($i = 0; $i < count($languages); $i++) {
+                    echo "<div class='form-check form-check-inline'>
+                        <input class='form-check-input' type='checkbox' name='dubbing[]' value='{$languages[$i]['id']}' id='dub{$i}'>
+                        <label class='form-check-label' for='dub{$i}'>{$languages[$i]['language']}</label>
+                        </div>";
+                }
+            ?>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Titulky</label><br>
+            <?php 
+                for ($i = 0; $i < count($languages); $i++) {
+                    echo "<div class='form-check form-check-inline'>
+                        <input class='form-check-input' type='checkbox' name='subtitles[]' value='{$languages[$i]['id']}' id='sub{$i}'>
+                        <label class='form-check-label' for='sub{$i}'>{$languages[$i]['language']}</label>
+                        </div>";
+                }
+            ?>
         </div>
         <button type="submit" class="btn btn-primary" name="add">Uložit</button>
         <a href="film_administration.php" class="btn btn-secondary">Zpět</a>
