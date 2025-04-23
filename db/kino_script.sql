@@ -978,7 +978,7 @@ DELIMITER ;
 
 call bookings_of_user(5);
 
-drop procedure get_film_dubbings;
+-- drop procedure get_film_dubbings;
 delimiter //
 create procedure get_film_dubbings(
 	in_film_id INT UNSIGNED
@@ -989,7 +989,7 @@ begin
 end //
 delimiter ;
 
-drop procedure add_dubbing_to_film;
+-- drop procedure add_dubbing_to_film;
 delimiter //
 create procedure add_dubbing_to_film(
 	in_film_id INT UNSIGNED,
@@ -1006,7 +1006,7 @@ begin
 end //
 delimiter ;
 
-drop procedure delete_all_film_dubbings;
+-- drop procedure delete_all_film_dubbings;
 delimiter //
 create procedure delete_all_film_dubbings(
 	in_film_id INT UNSIGNED
@@ -1016,7 +1016,7 @@ begin
 end //
 delimiter ;
 
-drop procedure get_film_subtitles;
+-- drop procedure get_film_subtitles;
 delimiter //
 create procedure get_film_subtitles(
 	in_film_id INT UNSIGNED
@@ -1029,7 +1029,7 @@ delimiter ;
 
 SELECT * FROM film_screening;
 
-drop procedure add_subtitles_to_film;
+-- drop procedure add_subtitles_to_film;
 delimiter //
 create procedure add_subtitles_to_film(
 	in_film_id INT UNSIGNED,
@@ -1046,7 +1046,7 @@ begin
 end //
 delimiter ;
 
-drop procedure delete_all_film_subtitles;
+-- drop procedure delete_all_film_subtitles;
 delimiter //
 create procedure delete_all_film_subtitles(
 	in_film_id INT UNSIGNED
