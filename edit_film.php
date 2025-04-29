@@ -31,12 +31,12 @@ $languages = $stmt->fetchAll(PDO::FETCH_ASSOC);
 $sql = "CALL get_film_dubbings(?)";
 $stmt = $conn->prepare($sql);
 $stmt->execute([$filmId]);
-$dubbings = $stmt->fetchAll(PDO::FETCH_COLUMN, 0);
+$dubbings = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 $sql = "CALL get_film_subtitles(?)";
 $stmt = $conn->prepare($sql);
 $stmt->execute([$filmId]);
-$subtitles = $stmt->fetchAll(PDO::FETCH_COLUMN, 0);
+$subtitles = $stmt->fetchAll(PDO::FETCH_ASSOC);
 $stmt->closeCursor();
 
 if (isset($_POST['update'])) {
@@ -109,26 +109,33 @@ if (isset($_POST['update'])) {
             $stmt->execute([$name, $length, $releaseDate, $description, $genre, $filmId]);
         }
 
-        $sql = "CALL delete_all_film_dubbings(?)";
-        $stmt = $conn->prepare($sql);
-        $stmt->execute([$filmId]);
-        foreach ($dubbingIds as $languageId) {
-            $sql = "CALL add_dubbing_to_film(?, ?)";
-            $stmt = $conn->prepare($sql);
-            $stmt->execute([$filmId, $languageId]);
-        }
+        for ($i = 0; $i < count($languages); $i++) {
+            $lanId = $languages[$i]['id'];
+            $filmHasDubbing = in_array($lanId, array_column($dubbings, "languageId"));
+            if ($filmHasDubbing && !in_array($lanId, $dubbingIds)) {
+                $sql = "CALL delete_film_has_dubbing(?, ?)";
+                $stmt = $conn->prepare($sql);
+                $stmt->execute([$filmId, $lanId]);
+            } else if (!$filmHasDubbing && in_array($lanId, $dubbingIds)) {
+                $sql = "CALL add_film_has_dubbing(?, ?)";
+                $stmt = $conn->prepare($sql);
+                $stmt->execute([$filmId, $lanId]);
+            }
 
-        $sql = "CALL delete_all_film_subtitles(?)";
-        $stmt = $conn->prepare($sql);
-        $stmt->execute([$filmId]);
-        foreach ($subtitlesIds as $languageId) {
-            $sql = "CALL add_subtitles_to_film(?, ?)";
-            $stmt = $conn->prepare($sql);
-            $stmt->execute([$filmId, $languageId]);
+            $filmHasSubtitles = in_array($lanId, array_column($subtitles, "languageId"));
+            if ($filmHasSubtitles && !in_array($lanId, $subtitlesIds)) {
+                $sql = "CALL delete_film_has_subtitles(?, ?)";
+                $stmt = $conn->prepare($sql);
+                $stmt->execute([$filmId, $lanId]);
+            } else if (!$filmHasDubbing && in_array($lanId, $subtitlesIds)) {
+                $sql = "CALL add_film_has_subtitles(?, ?)";
+                $stmt = $conn->prepare($sql);
+                $stmt->execute([$filmId, $lanId]);
+            }
         }
 
         header("Location: film_administration.php");
-        exit();
+        exit;
     }
 }
 ?>
@@ -197,9 +204,15 @@ if (isset($_POST['update'])) {
             <label class="form-label">Dabing</label><br>
             <?php 
                 for ($i = 0; $i < count($languages); $i++) {
+                    $languageId = $languages[$i]['id'];
+                    $filmHasDubbing = in_array($languageId, array_column($dubbings, "languageId"));
+                    $d = array_filter($dubbings, function($dubb) use ($languageId) { return $dubb["languageId"] === $languageId; });
+                    $d = reset($d);
+                    $hasScreening = !empty($d) && $d["haveScreening"];
                     echo "<div class='form-check form-check-inline'>
-                        <input class='form-check-input' type='checkbox' name='dubbing[]' value='{$languages[$i]['id']}' id='dub{$i}'" . (in_array($languages[$i]['id'], $dubbings) ? " checked" : "") . ">
-                        <label class='form-check-label' for='dub{$i}'>{$languages[$i]['language']}</label>
+                        <input class='form-check-input' type='checkbox' name='dubbing[]' value='{$languageId}' id='dub{$i}'"
+                            . ($filmHasDubbing ? " checked" . ($hasScreening ? " onclick='return false' style='pointer-events: none; filter: brightness(50%);'" : "") : "") . ">
+                        <label class='form-check-label'" . ($hasScreening ? " onclick='return false' style='pointer-events: none; filter: brightness(50%);'" : "") . "for='dub{$i}'>{$languages[$i]['language']}</label>
                         </div>";
                 }
             ?>
@@ -208,9 +221,15 @@ if (isset($_POST['update'])) {
             <label class="form-label">Titulky</label><br>
             <?php 
                 for ($i = 0; $i < count($languages); $i++) {
+                    $languageId = $languages[$i]['id'];
+                    $filmHasSubtitles = in_array($languageId, array_column($subtitles, "languageId"));
+                    $s = array_filter($subtitles, function($sub) use ($languageId) { return $sub["languageId"] === $languageId; });
+                    $s = reset($s);
+                    $hasScreening = !empty($s) && $s["haveScreening"];
                     echo "<div class='form-check form-check-inline'>
-                        <input class='form-check-input' type='checkbox' name='subtitles[]' value='{$languages[$i]['id']}' id='sub{$i}'" . (in_array($languages[$i]['id'], $subtitles) ? " checked" : "") . ">
-                        <label class='form-check-label' for='sub{$i}'>{$languages[$i]['language']}</label>
+                        <input class='form-check-input' type='checkbox' name='subtitles[]' value='{$languages[$i]['id']}' id='sub{$i}'"
+                            . ($filmHasSubtitles ? " checked" . ($hasScreening ? " onclick='return false' style='pointer-events: none; filter: brightness(50%);'" : "") : "") . ">
+                        <label class='form-check-label'" . ($hasScreening ? " onclick='return false' style='pointer-events: none; filter: brightness(50%);'" : "") . "for='sub{$i}'>{$languages[$i]['language']}</label>
                         </div>";
                 }
             ?>

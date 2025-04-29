@@ -74,12 +74,12 @@ if (isset($_POST['add'])) {
             $result = $conn->query("SELECT @newId AS film_id")->fetch(PDO::FETCH_ASSOC);
             $filmId = $result['film_id'];
             foreach ($dubbingIds as $languageId) {
-                $sql = "CALL add_dubbing_to_film(?, ?)";
+                $sql = "CALL add_film_has_dubbing(?, ?)";
                 $stmt = $conn->prepare($sql);
                 $stmt->execute([$filmId, $languageId]);
             }
             foreach ($subtitlesIds as $languageId) {
-                $sql = "CALL add_subtitles_to_film(?, ?)";
+                $sql = "CALL add_film_has_dubbing(?, ?)";
                 $stmt = $conn->prepare($sql);
                 $stmt->execute([$filmId, $languageId]);
             }

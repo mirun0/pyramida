@@ -35,8 +35,6 @@ CREATE TABLE IF NOT EXISTS genre (
 	PRIMARY KEY (id)
 ) ENGINE = MyISAM;
 
-select * from genre;
-
 CREATE INDEX idx_genre_name ON genre(name);
 
 CREATE TABLE IF NOT EXISTS film (
@@ -74,9 +72,6 @@ CREATE TABLE IF NOT EXISTS film_has_subtitles (
 	PRIMARY KEY (id)
 ) ENGINE = MyISAM;
 
-SELECT * FROM film_has_dubbing;
-SELECT * FROM film;
-
 CREATE TABLE IF NOT EXISTS film_screening (
 	id INT UNSIGNED NOT NULL AUTO_INCREMENT,
 	dateTime DATETIME NOT NULL,
@@ -87,22 +82,6 @@ CREATE TABLE IF NOT EXISTS film_screening (
 	FK_film_has_subtitles INT UNSIGNED REFERENCES film_has_subtitles(id),
 	PRIMARY KEY (id)
 ) ENGINE = MyISAM;
-
-SELECT 
-	DATE_FORMAT(film_screening.dateTime, "%H:%i") AS startTime,
-	DATE_FORMAT(DATE_ADD(film_screening.dateTime, INTERVAL film.length MINUTE), '%H:%i') AS endTime
-FROM hall
-	JOIN film_screening ON film_screening.FK_hall = hall.id
-	JOIN film ON film.id = film_screening.FK_film
-	WHERE hall.id = 4 AND DATE_FORMAT(film_screening.dateTime, "%Y-%m-%d") = "2025-05-16";
-    
-SELECT film_has_dubbing.id AS filmHasDubbingId, language.language AS language, FK_film FROM film_has_dubbing 
-    JOIN film ON film.id = film_has_dubbing.FK_film
-    JOIN language ON language.id = film_has_dubbing.FK_language;
-    
-SELECT film_has_subtitles.id AS filmHasSubtitlesId, language.language AS language, FK_film FROM film_has_subtitles
-    JOIN film ON film.id = film_has_subtitles.FK_film
-    JOIN language ON language.id = film_has_subtitles.FK_language;
 
 CREATE TABLE IF NOT EXISTS booking (
 	id INT UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -976,7 +955,6 @@ END //
 
 DELIMITER ;
 
-call bookings_of_user(5);
 
 -- drop procedure get_film_dubbings;
 delimiter //
@@ -984,75 +962,105 @@ create procedure get_film_dubbings(
 	in_film_id INT UNSIGNED
 )
 begin
-	SELECT FK_language AS languageId FROM film_has_dubbing
-    WHERE FK_film = in_film_id;
+	SELECT film_has_dubbing.FK_language AS languageId, IF(COUNT(film_screening.id) > 0, TRUE, FALSE) AS haveScreening FROM film_has_dubbing
+	LEFT JOIN film_screening ON film_screening.FK_film_has_dubbing = film_has_dubbing.id
+	WHERE film_has_dubbing.FK_film = in_film_id
+	GROUP BY film_has_dubbing.FK_language;
 end //
 delimiter ;
 
--- drop procedure add_dubbing_to_film;
+
+-- drop procedure add_film_has_dubbing;
 delimiter //
-create procedure add_dubbing_to_film(
+create procedure add_film_has_dubbing(
 	in_film_id INT UNSIGNED,
     in_language_id INT UNSIGNED
 )
 begin
-	DECLARE film_id int unsigned;
-    DECLARE language_id int unsigned;
+	DECLARE film_has_dubbing_id int unsigned;
     
-    SELECT film.id INTO film_id FROM film WHERE film.id = in_film_id;
-    SELECT language.id INTO language_id FROM language WHERE language.id = in_language_id;
-
-	INSERT INTO film_has_dubbing (FK_film, FK_language) VALUES (film_id, language_id);
+	SELECT id INTO film_has_dubbing_id FROM film_has_dubbing
+	WHERE FK_film = in_film_id AND FK_language = in_language_id;
+    
+    IF film_has_dubbing_id IS NULL THEN
+		INSERT INTO film_has_dubbing (FK_film, FK_language) VALUES (in_film_id, in_language_id);
+    END IF;
 end //
 delimiter ;
 
--- drop procedure delete_all_film_dubbings;
+
+-- drop procedure delete_film_has_dubbing;
 delimiter //
-create procedure delete_all_film_dubbings(
-	in_film_id INT UNSIGNED
+create procedure delete_film_has_dubbing (
+	in_film_id INT UNSIGNED,
+    in_language_id INT UNSIGNED
 )
 begin
-	DELETE FROM film_has_dubbing WHERE FK_film = in_film_id;
+	DECLARE film_has_dubbing_id int unsigned;
+    DECLARE hasScreening boolean;
+    
+    SELECT id INTO film_has_dubbing_id FROM film_has_dubbing
+	WHERE FK_film = in_film_id AND FK_language = in_language_id;
+    
+    SELECT IF (COUNT(*) > 0, TRUE, FALSE) INTO hasScreening FROM film_screening WHERE FK_film = in_film_id AND FK_film_has_dubbing = film_has_dubbing_id;
+    
+    IF !hasScreening THEN
+		DELETE FROM film_has_dubbing WHERE FK_film = in_film_id AND FK_language = in_language_id;
+	END IF;
 end //
 delimiter ;
 
 -- drop procedure get_film_subtitles;
 delimiter //
-create procedure get_film_subtitles(
+create procedure get_film_subtitles (
 	in_film_id INT UNSIGNED
 )
 begin
-	SELECT FK_language AS languageId FROM film_has_subtitles
-    WHERE FK_film = in_film_id;
+    SELECT film_has_subtitles.FK_language AS languageId, IF(COUNT(film_screening.id) > 0, TRUE, FALSE) AS haveScreening FROM film_has_subtitles
+	LEFT JOIN film_screening ON film_screening.FK_film_has_subtitles = film_has_subtitles.id
+	WHERE film_has_subtitles.FK_film = in_film_id
+	GROUP BY film_has_subtitles.FK_language;
 end //
 delimiter ;
 
-SELECT * FROM film_screening;
 
--- drop procedure add_subtitles_to_film;
+-- drop procedure add_film_has_dubbing;
 delimiter //
-create procedure add_subtitles_to_film(
+create procedure add_film_has_subtitles (
 	in_film_id INT UNSIGNED,
     in_language_id INT UNSIGNED
 )
 begin
-	DECLARE film_id int unsigned;
-    DECLARE language_id int unsigned;
+	DECLARE film_has_subtitles_id int unsigned;
     
-    SELECT film.id INTO film_id FROM film WHERE film.id = in_film_id;
-    SELECT language.id INTO language_id FROM language WHERE language.id = in_language_id;
-
-	INSERT INTO film_has_subtitles (FK_film, FK_language) VALUES (film_id, language_id);
+	SELECT id INTO film_has_subtitles_id FROM film_has_subtitles
+	WHERE FK_film = in_film_id AND FK_language = in_language_id;
+    
+    IF film_has_subtitles_id IS NULL THEN
+		INSERT INTO film_has_subtitles (FK_film, FK_language) VALUES (in_film_id, in_language_id);
+    END IF;
 end //
 delimiter ;
 
--- drop procedure delete_all_film_subtitles;
+
+-- drop procedure delete_film_has_subtitles;
 delimiter //
-create procedure delete_all_film_subtitles(
-	in_film_id INT UNSIGNED
+create procedure delete_film_has_subtitles (
+	in_film_id INT UNSIGNED,
+    in_language_id INT UNSIGNED
 )
 begin
-	DELETE FROM film_has_subtitles WHERE FK_film = in_film_id;
+	DECLARE film_has_subtitles_id int unsigned;
+    DECLARE hasScreening boolean;
+    
+    SELECT id INTO film_has_subtitles_id FROM film_has_subtitles
+	WHERE FK_film = in_film_id AND FK_language = in_language_id;
+    
+    SELECT IF (COUNT(*) > 0, TRUE, FALSE) INTO hasScreening FROM film_screening WHERE FK_film = in_film_id AND FK_film_has_subtitles = film_has_subtitles_id;
+    
+    IF !hasScreening THEN
+		DELETE FROM film_has_subtitles WHERE FK_film = in_film_id AND FK_language = in_language_id;
+	END IF;
 end //
 delimiter ;
 
@@ -1081,6 +1089,3 @@ end //
 delimiter ;
 
 call validate_screening_time(4, 18, "2025-5-16", "11:00");
-
-SELECT DATE_FORMAT(dateTime, "%Y-%m-%d") AS date, FK_hall as hallId, TIME(dateTime) AS startTime, TIME(DATE_ADD(dateTime, INTERVAL film.length MINUTE)) AS endTime, film_screening.id AS screeningId 
-FROM film_screening JOIN film ON film.id = film_screening.FK_film WHERE FK_hall = 4 AND DATE_FORMAT(dateTime, "%Y-%m-%d") = "2025-05-16";
